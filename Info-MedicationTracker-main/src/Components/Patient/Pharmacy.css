@@ -1,0 +1,95 @@
+.pharmacy-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.checkout-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.order-summary, .delivery-form {
+  background: white;
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+}
+
+.med-items {
+  margin: 1.5rem 0;
+}
+
+.med-price-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #f1f5f9;
+  color: #475569;
+}
+
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 1.5rem;
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: #0f172a;
+}
+
+.delivery-form textarea {
+  width: 100%;
+  height: 120px;
+  padding: 1rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  margin-top: 0.5rem;
+  font-family: inherit;
+}
+
+.place-order-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  color: white;
+  border: none;
+  padding: 1rem;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 1.5rem;
+}
+
+.cancel-btn {
+  width: 100%;
+  background: none;
+  border: 1px solid #cbd5e1;
+  color: #64748b;
+  padding: 0.75rem;
+  border-radius: 12px;
+  margin-top: 1rem;
+  cursor: pointer;
+}
+
+.success-view {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+}
+
+.success-card {
+  text-align: center;
+  background: white;
+  padding: 4rem;
+  border-radius: 30px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.success-icon {
+  font-size: 4rem;
+  display: block;
+  margin-bottom: 1rem;
+}

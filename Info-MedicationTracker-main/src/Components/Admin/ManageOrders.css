@@ -1,0 +1,23 @@
+.status-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.status-badge.pending { background: #fef3c7; color: #92400e; }
+.status-badge.shipped { background: #e0f2fe; color: #0369a1; }
+.status-badge.delivered { background: #dcfce7; color: #166534; }
+
+.status-select {
+  padding: 0.4rem;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  font-size: 0.85rem;
+  outline: none;
+}
+
+.status-select:focus {
+  border-color: #0284c7;
+}

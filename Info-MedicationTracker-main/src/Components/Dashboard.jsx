@@ -32,43 +32,37 @@ export default function Dashboard({ user, logout }) {
 
   useEffect(() => {
     checkProfile();
-    if (activeTab === "patients") {
-      fetchPatients();
-    }
+    fetchPatients();
+
+    // 🔄 AUTO-POLLING: Refresh data every 2 seconds
+    const interval = setInterval(() => {
+        checkProfile();
+        if (activeTab === "patients") fetchPatients();
+    }, 2000);
+
+    return () => clearInterval(interval);
   }, [activeTab]);
 
   const checkProfile = async () => {
     try {
       const res = await api.get("/doctor/profile");
-      
       if (res.data.fullName) setDoctorName(res.data.fullName);
-      else setDoctorName(res.data.fullName || "Doctor");
-
-      if (res.data.degreeName || res.data.specialization) {
-          const deg = res.data.degreeName || "";
-          const spec = res.data.specialization || "";
-          setSpecialization(`${deg} ${spec}`.trim());
-      }
-
+      if (res.data.specialization) setSpecialization(`${res.data.degreeName || ""} ${res.data.specialization}`);
       if (res.data.profilePhotoUrl) setPhoto(res.data.profilePhotoUrl);
 
       if (!res.data.fullName || !res.data.specialization) setIsProfileComplete(false);
       else setIsProfileComplete(true);
-
     } catch (err) {
       setIsProfileComplete(false);
     }
   };
 
   const fetchPatients = async () => {
-    setLoading(true);
     try {
       const response = await api.get("/doctor/myUsers");
       setPatients(response.data);
     } catch (err) {
       console.error("Failed to fetch patients", err);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -77,7 +71,6 @@ export default function Dashboard({ user, logout }) {
     setPrescMsg("");
     try {
       const medsList = prescription.medicines.split(',').map(m => m.trim());
-      
       const requestBody = {
         userId: selectedPatient.id,
         medicines: medsList,
@@ -85,7 +78,6 @@ export default function Dashboard({ user, logout }) {
         note: prescription.note,
         nextAppointmentDate: prescription.nextDate
       };
-
       await api.post("/prescriptions/write", requestBody);
       setPrescMsg("✅ Prescription sent successfully!");
       setTimeout(() => {
@@ -102,13 +94,11 @@ export default function Dashboard({ user, logout }) {
     <div className="dashboard-container">
       <aside className="sidebar">
         <h2 className="brand">MedicationTrack</h2>
-
         <div className="profile-box">
           <img src={photo} alt="Profile" className="sidebar-avatar" />
           <p className="username">Dr. {doctorName}</p>
           <p style={{color: '#94a3b8', fontSize: '0.8rem', marginTop: '0.25rem'}}>{specialization}</p>
         </div>
-
         <nav className="menu">
           <button className={activeTab === "patients" ? "active" : ""} onClick={() => setActiveTab("patients")}>👥 My Patients</button>
           <button className={`${activeTab === "profile" ? "active" : ""} ${!isProfileComplete ? "blink-profile" : ""}`} 
@@ -116,7 +106,6 @@ export default function Dashboard({ user, logout }) {
           <button className={activeTab === "appointments" ? "active" : ""} onClick={() => setActiveTab("appointments")}>📅 Appointments</button>
           <button className={activeTab === "contact" ? "active" : ""} onClick={() => setActiveTab("contact")}>🎧 Support</button>
         </nav>
-
         <button className="logout-btn" onClick={logout}>Logout</button>
       </aside>
 
@@ -124,49 +113,45 @@ export default function Dashboard({ user, logout }) {
         {activeTab === "patients" && (
           <div className="content-section">
             <h2>Patient Management</h2>
-            {loading ? <div className="loading">Loading patients...</div> : (
-              <div className="patient-list-card">
-                {patients.length === 0 ? (
-                  <div style={{padding: '3rem', textAlign: 'center', color: '#64748b'}}>
-                    <p>No patients assigned to you yet.</p>
-                  </div>
-                ) : (
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Patient Name</th>
-                        <th>Email</th>
-                        <th>Gender</th>
-                        <th>Age</th>
-                        <th>Action</th>
+            <div className="patient-list-card">
+              {patients.length === 0 ? (
+                <div style={{padding: '3rem', textAlign: 'center', color: '#64748b'}}>
+                  <p>No patients assigned to you yet.</p>
+                </div>
+              ) : (
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Patient Name</th>
+                      <th>Email</th>
+                      <th>Gender</th>
+                      <th>Age</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {patients.map((p, index) => (
+                      <tr key={index}>
+                        <td><strong>{p.userName}</strong></td>
+                        <td>{p.email}</td>
+                        <td>{p.gender || "N/A"}</td>
+                        <td>{p.age || "N/A"}</td>
+                        <td>
+                          <button className="view-btn" onClick={() => setSelectedPatient(p)}>Prescribe</button>
+                        </td>
                       </tr>
-                    </thead>
-                    <tbody>
-                      {patients.map((p, index) => (
-                        <tr key={index}>
-                          <td><strong>{p.userName}</strong></td>
-                          <td>{p.email}</td>
-                          <td>{p.gender || "N/A"}</td>
-                          <td>{p.age || "N/A"}</td>
-                          <td>
-                            <button className="view-btn" onClick={() => setSelectedPatient(p)}>Prescribe</button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                )}
-              </div>
-            )}
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
           </div>
         )}
-
         {activeTab === "appointments" && <AppointmentHistory />}
         {activeTab === "profile" && <DoctorProfile />}
         {activeTab === "contact" && <ContactUs />}
       </main>
 
-      {/* MODAL MOVED OUTSIDE MAIN CONTENT */}
       {selectedPatient && (
         <div className="modal-overlay" onClick={() => setSelectedPatient(null)}>
           <div className="modal-content split-view" onClick={e => e.stopPropagation()}>

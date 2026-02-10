@@ -7,7 +7,7 @@ import ManageDoctors from "./ManageDoctors";
 import Appointments from "./Appointments";
 import Settings from "./Settings";
 import AdminAnalytics from "./AdminAnalytics";
-import DoctorDocumentUpload from "./DoctorDocumentUpload";
+import ManageOrders from "./ManageOrders"; // ✅ NEW
 
 export default function AdminDashboard({ user, logout }) {
   const [activeTab, setActiveTab] = useState("analytics");
@@ -26,7 +26,7 @@ export default function AdminDashboard({ user, logout }) {
           <button className={activeTab === "assign" ? "active" : ""} onClick={() => setActiveTab("assign")}>Assign Doctor</button>
           <button className={activeTab === "doctors" ? "active" : ""} onClick={() => setActiveTab("doctors")}>Manage Doctors</button>
           <button className={activeTab === "appointments" ? "active" : ""} onClick={() => setActiveTab("appointments")}>Appointments</button>
-          <button className={activeTab === "upload" ? "active" : ""} onClick={() => setActiveTab("upload")}>Doc Uploads</button>
+          <button className={activeTab === "orders" ? "active" : ""} onClick={() => setActiveTab("orders")}>Pharmacy Orders</button>
           <button className={activeTab === "settings" ? "active" : ""} onClick={() => setActiveTab("settings")}>Settings</button>
         </nav>
         <button className="logout-btn" onClick={logout}>Logout</button>
@@ -37,7 +37,7 @@ export default function AdminDashboard({ user, logout }) {
         {activeTab === "assign" && <AssignDoctor />}
         {activeTab === "doctors" && <ManageDoctors />}
         {activeTab === "appointments" && <Appointments />}
-        {activeTab === "upload" && <DoctorDocumentUpload />}
+        {activeTab === "orders" && <ManageOrders />}
         {activeTab === "settings" && <Settings />}
       </main>
     </div>

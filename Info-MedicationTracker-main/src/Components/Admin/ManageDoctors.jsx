@@ -9,6 +9,9 @@ export default function ManageDoctors() {
 
   useEffect(() => {
     fetchDoctors();
+    // 🔄 AUTO-POLLING: Refresh list every 2 seconds
+    const interval = setInterval(fetchDoctors, 2000);
+    return () => clearInterval(interval);
   }, []);
 
   const fetchDoctors = async () => {
@@ -34,7 +37,7 @@ export default function ManageDoctors() {
     if (!window.confirm("Are you sure you want to unassign this patient?")) return;
     try {
       await api.delete(`/admin/remove-doctor/${userId}`);
-      fetchDoctors(); // Refresh list
+      fetchDoctors();
     } catch (err) {
       alert("Failed to remove patient.");
     }

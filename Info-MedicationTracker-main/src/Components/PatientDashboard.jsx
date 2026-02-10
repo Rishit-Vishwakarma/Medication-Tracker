@@ -9,17 +9,22 @@ import Prescriptions from "./Patient/Prescriptions";
 import Medication from "./Patient/Medication";
 import YourDoctor from "./Patient/YourDoctor";
 import MyProfile from "./Patient/MyProfile";
+import Pharmacy from "./Patient/Pharmacy";
+import TrackOrders from "./Patient/TrackOrders"; // ✅ NEW
 
 export default function PatientDashboard({ user, logout }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activePage, setActivePage] = useState("dashboard");
   const [isProfileComplete, setIsProfileComplete] = useState(true);
+  const [selectedMeds, setSelectedMeds] = useState([]);
   const [photo, setPhoto] = useState(
     "https://cdn-icons-png.flaticon.com/512/847/847969.png"
   );
 
   useEffect(() => {
     checkProfile();
+    const interval = setInterval(checkProfile, 2000);
+    return () => clearInterval(interval);
   }, []);
 
   const checkProfile = async () => {
@@ -28,27 +33,31 @@ export default function PatientDashboard({ user, logout }) {
       if (!res.data.age || !res.data.gender) setIsProfileComplete(false);
       else setIsProfileComplete(true);
     } catch (err) {
-      // 404 is expected for new users, so we just set profile as incomplete
       setIsProfileComplete(false);
     }
   };
 
-  const handlePhotoChange = (e) => {
-    const file = e.target.files[0];
-    if (file) setPhoto(URL.createObjectURL(file));
+  const handleBuyMedicines = (meds) => {
+    setSelectedMeds(meds);
+    setActivePage("pharmacy");
   };
 
   const renderPage = () => {
     switch (activePage) {
+      case "profile": return <MyProfile user={user} />;
       case "book": return <BookAppointment />;
       case "appointments": return <MyAppointments />;
-      case "prescriptions": return <Prescriptions />;
+      case "prescriptions": return <Prescriptions onBuyClick={handleBuyMedicines} />;
       case "medication": return <Medication />;
       case "doctor": return <YourDoctor />;
-      case "profile": return <MyProfile user={user} />;
+      case "pharmacy": return <Pharmacy selectedMeds={selectedMeds} clearSelection={() => setActivePage("track")} />;
+      case "track": return <TrackOrders />; // ✅ NEW
       default:
         return (
           <section className="dashboard-grid">
+            <div className="card" onClick={() => setActivePage("profile")}>
+              <span className="icon">👤</span><p>My Profile</p>
+            </div>
             <div className="card" onClick={() => setActivePage("book")}>
               <span className="icon">📅</span><p>Book Appointment</p>
             </div>
@@ -64,8 +73,8 @@ export default function PatientDashboard({ user, logout }) {
             <div className="card" onClick={() => setActivePage("doctor")}>
               <span className="icon">👨‍⚕️</span><p>Your Doctor</p>
             </div>
-            <div className="card" onClick={() => setActivePage("profile")}>
-              <span className="icon">👤</span><p>My Profile</p>
+            <div className="card" onClick={() => setActivePage("track")}>
+              <span className="icon">🚚</span><p>Track Orders</p>
             </div>
           </section>
         );
@@ -79,22 +88,20 @@ export default function PatientDashboard({ user, logout }) {
 
         <div className="profile-box">
           <img src={photo} alt="Profile" />
-          <label className="upload-btn">
-            Change Photo
-            <input type="file" hidden accept="image/*" onChange={handlePhotoChange} />
-          </label>
+          <p className="username">{user?.username || user?.email.split('@')[0]}</p>
         </div>
 
         <ul className="menu">
-          <li className={activePage === "dashboard" ? "active" : ""} onClick={() => setActivePage("dashboard")}>🏠 Dashboard</li>
+          <li className={activePage === "dashboard" ? "active" : ""} onClick={() => setActivePage("dashboard")}>Dashboard</li>
           <li className={`${activePage === "profile" ? "active" : ""} ${!isProfileComplete ? "blink-profile" : ""}`} 
-              onClick={() => setActivePage("profile")}>👤 My Profile</li>
-          <li className={activePage === "book" ? "active" : ""} onClick={() => setActivePage("book")}>📅 Book Appointment</li>
-          <li className={activePage === "appointments" ? "active" : ""} onClick={() => setActivePage("appointments")}>⏱ My Appointments</li>
-          <li className={activePage === "prescriptions" ? "active" : ""} onClick={() => setActivePage("prescriptions")}>🧾 Prescriptions</li>
-          <li className={activePage === "medication" ? "active" : ""} onClick={() => setActivePage("medication")}>💊 Medication</li>
-          <li className={activePage === "doctor" ? "active" : ""} onClick={() => setActivePage("doctor")}>👨‍⚕️ Your Doctor</li>
-          <li className="logout" onClick={logout}>🚪 Logout</li>
+              onClick={() => setActivePage("profile")}>My Profile</li>
+          <li className={activePage === "book" ? "active" : ""} onClick={() => setActivePage("book")}>Book Appointment</li>
+          <li className={activePage === "appointments" ? "active" : ""} onClick={() => setActivePage("appointments")}>My Appointments</li>
+          <li className={activePage === "prescriptions" ? "active" : ""} onClick={() => setActivePage("prescriptions")}>Prescriptions</li>
+          <li className={activePage === "medication" ? "active" : ""} onClick={() => setActivePage("medication")}>Medication</li>
+          <li className={activePage === "doctor" ? "active" : ""} onClick={() => setActivePage("doctor")}>Your Doctor</li>
+          <li className={activePage === "track" ? "active" : ""} onClick={() => setActivePage("track")}>Track Orders</li>
+          <li className="logout" onClick={logout}>Logout</li>
         </ul>
       </aside>
 

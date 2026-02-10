@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import api from "../../api";
 import "./Prescriptions.css";
 
-export default function Prescriptions() {
+export default function Prescriptions({ onBuyClick }) {
   const [prescriptions, setPrescriptions] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -13,14 +13,9 @@ export default function Prescriptions() {
   const fetchPrescriptions = async () => {
     try {
       const response = await api.get("/prescriptions/my");
-      if (Array.isArray(response.data)) {
-        setPrescriptions(response.data);
-      } else {
-        setPrescriptions([]);
-      }
+      setPrescriptions(response.data);
     } catch (err) {
       console.error("Failed to fetch prescriptions", err);
-      setPrescriptions([]);
     } finally {
       setLoading(false);
     }
@@ -28,59 +23,71 @@ export default function Prescriptions() {
 
   return (
     <div className="patient-page">
-      <h2>My Prescriptions</h2>
-      <p className="subtitle">Digital prescriptions issued by your doctor</p>
+      <div className="page-header">
+        <h2>Medical Prescriptions</h2>
+        <p className="subtitle">Your digital health records and medications</p>
+      </div>
 
-      {loading ? <p>Loading...</p> : (
-        <div className="prescription-list">
-          {(!prescriptions || prescriptions.length === 0) ? (
-            <p style={{ textAlign: 'center', marginTop: '2rem' }}>No prescriptions found.</p>
-          ) : (
-            prescriptions.map((rx) => (
-              <div key={rx.id} className="prescription-card" style={{ marginBottom: '2rem' }}>
-                <div className="rx-header">
+      <div className="presc-grid">
+        {loading ? <div className="loading">Loading...</div> : prescriptions.length === 0 ? (
+          <div className="empty-state">No prescriptions found.</div>
+        ) : (
+          prescriptions.map((p) => (
+            <div key={p.id} className="presc-card">
+              <div className="presc-header">
+                <div className="doc-info">
+                  <span className="doc-icon">👨‍⚕️</span>
                   <div>
-                    <h3>Dr. {rx.doctor?.userName || "Assigned Doctor"}</h3>
-                    <span>Diagnosis: <strong>{rx.diagnoses}</strong></span>
+                    <span className="doctor-name">Dr. {p.doctor?.userName || "Specialist"}</span>
+                    <span className="presc-date">{p.date || "Recent"}</span>
                   </div>
-                  <div className="rx-verified">✔ Verified</div>
+                </div>
+                <div className="presc-id">ID: #{p.id}</div>
+              </div>
+
+              <div className="presc-body">
+                <div className="info-section">
+                  <label>Diagnosis</label>
+                  <p className="diagnosis-text">{p.diagnoses}</p>
                 </div>
 
-                <div className="rx-info">
-                  <p><b>Next Appointment:</b> {rx.nextAppointmentDate || "Not scheduled"}</p>
-                  <p><b>Prescription ID:</b> RX-{rx.id}</p>
+                <div className="info-section">
+                  <label>Medications</label>
+                  <ul className="med-list">
+                    {p.medicines.map((m, i) => (
+                      <li key={i}>
+                        <span className="med-bullet">💊</span>
+                        <span className="med-name">{m}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
 
-                <div className="medicine-table">
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Medicine Name</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {rx.medicines && rx.medicines.map((med, i) => (
-                        <tr key={i}>
-                          <td>{med}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                {p.note && (
+                  <div className="info-section">
+                    <label>Doctor's Note</label>
+                    <p className="note-text">{p.note}</p>
+                  </div>
+                )}
 
-                <div className="rx-note">
-                  <b>Doctor Notes:</b>
-                  <p>{rx.note || "No additional notes provided."}</p>
-                </div>
-
-                <div className="rx-actions">
-                  <button className="download-btn" onClick={() => window.print()}>📄 Print Prescription</button>
+                <div className="follow-up-box">
+                  <span className="calendar-icon">📅</span>
+                  <div>
+                    <label>Next Appointment</label>
+                    <p>{p.nextAppointmentDate || "Not scheduled"}</p>
+                  </div>
                 </div>
               </div>
-            ))
-          )}
-        </div>
-      )}
+
+              <div className="presc-footer">
+                <button className="buy-btn" onClick={() => onBuyClick(p.medicines)}>
+                  🛒 Order Medicines
+                </button>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
     </div>
   );
 }

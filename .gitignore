@@ -4,11 +4,6 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
-# Frontend
-Info-MedicationTracker-main/node_modules/
-Info-MedicationTracker-main/dist/
-Info-MedicationTracker-main/.env
-
 ### STS ###
 .apt_generated
 .classpath

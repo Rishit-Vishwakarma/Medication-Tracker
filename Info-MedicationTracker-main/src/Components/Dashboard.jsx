@@ -13,6 +13,7 @@ export default function Dashboard({ user, logout }) {
   const [loading, setLoading] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [isProfileComplete, setIsProfileComplete] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   
   // Sidebar Info State
   const [doctorName, setDoctorName] = useState(user.email.split('@')[0]);
@@ -34,7 +35,6 @@ export default function Dashboard({ user, logout }) {
     checkProfile();
     fetchPatients();
 
-    // 🔄 AUTO-POLLING: Refresh data every 2 seconds
     const interval = setInterval(() => {
         checkProfile();
         if (activeTab === "patients") fetchPatients();
@@ -42,6 +42,18 @@ export default function Dashboard({ user, logout }) {
 
     return () => clearInterval(interval);
   }, [activeTab]);
+
+  const openPrescribeModal = (patient) => {
+    // Ensure we use the latest data for the selected patient from the state
+    const latestData = patients.find(p => p.id === patient.id) || patient;
+    setSelectedPatient(latestData);
+    setSidebarOpen(false);
+  };
+
+  const closePrescribeModal = () => {
+    setSelectedPatient(null);
+    setSidebarOpen(true);
+  };
 
   const checkProfile = async () => {
     try {
@@ -61,6 +73,17 @@ export default function Dashboard({ user, logout }) {
     try {
       const response = await api.get("/doctor/myUsers");
       setPatients(response.data);
+      
+      // If modal is open, update the selected patient data in real-time
+      if (selectedPatient) {
+          const updated = response.data.find(p => p.id === selectedPatient.id);
+          if (updated) {
+              // Only update if data changed to avoid flicker, but always update photo URL if changed
+              if (updated.profilePhotoUrl !== selectedPatient.profilePhotoUrl) {
+                  setSelectedPatient(prev => ({ ...prev, profilePhotoUrl: updated.profilePhotoUrl }));
+              }
+          }
+      }
     } catch (err) {
       console.error("Failed to fetch patients", err);
     }
@@ -81,7 +104,7 @@ export default function Dashboard({ user, logout }) {
       await api.post("/prescriptions/write", requestBody);
       setPrescMsg("✅ Prescription sent successfully!");
       setTimeout(() => {
-          setSelectedPatient(null);
+          closePrescribeModal();
           setPrescMsg("");
           setPrescription({ medicines: "", diagnoses: "", note: "", nextDate: "" });
       }, 2000);
@@ -90,26 +113,34 @@ export default function Dashboard({ user, logout }) {
     }
   };
 
+  // Helper to get photo URL with cache busting
+  const getPatientPhoto = (url) => {
+      if (!url) return "https://cdn-icons-png.flaticon.com/512/847/847969.png";
+      return `${url}?t=${new Date().getTime()}`; // Force refresh
+  };
+
   return (
     <div className="dashboard-container">
-      <aside className="sidebar">
-        <h2 className="brand">MedicationTrack</h2>
-        <div className="profile-box">
-          <img src={photo} alt="Profile" className="sidebar-avatar" />
-          <p className="username">Dr. {doctorName}</p>
-          <p style={{color: '#94a3b8', fontSize: '0.8rem', marginTop: '0.25rem'}}>{specialization}</p>
-        </div>
-        <nav className="menu">
-          <button className={activeTab === "patients" ? "active" : ""} onClick={() => setActiveTab("patients")}>👥 My Patients</button>
-          <button className={`${activeTab === "profile" ? "active" : ""} ${!isProfileComplete ? "blink-profile" : ""}`} 
-                  onClick={() => setActiveTab("profile")}>👤 Profile</button>
-          <button className={activeTab === "appointments" ? "active" : ""} onClick={() => setActiveTab("appointments")}>📅 Appointments</button>
-          <button className={activeTab === "contact" ? "active" : ""} onClick={() => setActiveTab("contact")}>🎧 Support</button>
-        </nav>
-        <button className="logout-btn" onClick={logout}>Logout</button>
-      </aside>
+      {sidebarOpen && (
+        <aside className="sidebar">
+          <h2 className="brand">MedicationTrack</h2>
+          <div className="profile-box">
+            <img src={photo} alt="Profile" className="sidebar-avatar" />
+            <p className="username">Dr. {doctorName}</p>
+            <p style={{color: '#94a3b8', fontSize: '0.8rem', marginTop: '0.25rem'}}>{specialization}</p>
+          </div>
+          <nav className="menu">
+            <button className={activeTab === "patients" ? "active" : ""} onClick={() => setActiveTab("patients")}>👥 My Patients</button>
+            <button className={`${activeTab === "profile" ? "active" : ""} ${!isProfileComplete ? "blink-profile" : ""}`} 
+                    onClick={() => setActiveTab("profile")}>👤 Profile</button>
+            <button className={activeTab === "appointments" ? "active" : ""} onClick={() => setActiveTab("appointments")}>📅 Appointments</button>
+            <button className={activeTab === "contact" ? "active" : ""} onClick={() => setActiveTab("contact")}>🎧 Support</button>
+          </nav>
+          <button className="logout-btn" onClick={logout}>Logout</button>
+        </aside>
+      )}
 
-      <main className="main-content">
+      <main className="main-content" style={{ marginLeft: sidebarOpen ? '260px' : '0' }}>
         {activeTab === "patients" && (
           <div className="content-section">
             <h2>Patient Management</h2>
@@ -137,7 +168,7 @@ export default function Dashboard({ user, logout }) {
                         <td>{p.gender || "N/A"}</td>
                         <td>{p.age || "N/A"}</td>
                         <td>
-                          <button className="view-btn" onClick={() => setSelectedPatient(p)}>Prescribe</button>
+                          <button className="view-btn" onClick={() => openPrescribeModal(p)}>Prescribe</button>
                         </td>
                       </tr>
                     ))}
@@ -153,19 +184,32 @@ export default function Dashboard({ user, logout }) {
       </main>
 
       {selectedPatient && (
-        <div className="modal-overlay" onClick={() => setSelectedPatient(null)}>
+        <div className="modal-overlay" onClick={closePrescribeModal}>
           <div className="modal-content split-view" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
               <h2>Patient Consultation</h2>
-              <button className="close-btn" onClick={() => setSelectedPatient(null)}>✕</button>
+              <button className="close-btn" onClick={closePrescribeModal}>✕</button>
             </div>
             <div className="modal-body-split">
               <div className="patient-profile-side">
                 <h3>Patient Profile</h3>
+                
+                {/* PATIENT PHOTO WITH CACHE BUSTING */}
+                <img 
+                  src={getPatientPhoto(selectedPatient.profilePhotoUrl)} 
+                  alt="Patient" 
+                  className="patient-modal-photo"
+                  key={selectedPatient.profilePhotoUrl} // Force re-render
+                />
+
                 <div className="profile-info-grid">
                   <div className="info-item"><label>Name</label><p>{selectedPatient.userName}</p></div>
                   <div className="info-item"><label>Email</label><p>{selectedPatient.email}</p></div>
                   <div className="info-item"><label>Age / Gender</label><p>{selectedPatient.age || "N/A"} / {selectedPatient.gender || "N/A"}</p></div>
+                  
+                  {/* ADDED KNOWN DISEASES BACK */}
+                  <div className="info-item"><label>Known Diseases</label><p>{selectedPatient.knownDisease || "None"}</p></div>
+
                   <div className="info-item"><label>Symptoms</label><p className="highlight">{selectedPatient.symptoms || "None reported"}</p></div>
                   <div className="info-item"><label>Allergies</label><p>{selectedPatient.allergies || "None"}</p></div>
                   <div className="info-item"><label>Patient Note</label><p className="note-box">{selectedPatient.note || "No additional notes"}</p></div>

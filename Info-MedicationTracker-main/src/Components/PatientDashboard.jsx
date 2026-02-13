@@ -10,7 +10,7 @@ import Medication from "./Patient/Medication";
 import YourDoctor from "./Patient/YourDoctor";
 import MyProfile from "./Patient/MyProfile";
 import Pharmacy from "./Patient/Pharmacy";
-import TrackOrders from "./Patient/TrackOrders"; // ✅ NEW
+import TrackOrders from "./Patient/TrackOrders";
 
 export default function PatientDashboard({ user, logout }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -20,16 +20,21 @@ export default function PatientDashboard({ user, logout }) {
   const [photo, setPhoto] = useState(
     "https://cdn-icons-png.flaticon.com/512/847/847969.png"
   );
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     checkProfile();
-    const interval = setInterval(checkProfile, 2000);
+    const interval = setInterval(checkProfile, 5000);
     return () => clearInterval(interval);
   }, []);
 
   const checkProfile = async () => {
     try {
       const res = await api.get("/user/profile");
+      if (res.data.profilePhotoUrl) {
+          setPhoto(`${res.data.profilePhotoUrl}?t=${new Date().getTime()}`);
+      }
+      
       if (!res.data.age || !res.data.gender) setIsProfileComplete(false);
       else setIsProfileComplete(true);
     } catch (err) {
@@ -37,9 +42,49 @@ export default function PatientDashboard({ user, logout }) {
     }
   };
 
+  const handlePhotoUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setUploading(true);
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      // 1. Upload File
+      const uploadRes = await api.post("/files/upload", formData, {
+        headers: { "Content-Type": "multipart/form-data" }
+      });
+      const newPhotoUrl = uploadRes.data;
+
+      // 2. Update Profile with new URL
+      const currentProfileRes = await api.get("/user/profile");
+      
+      // Clean the object to avoid circular reference or ID issues
+      const { user, id, ...cleanProfile } = currentProfileRes.data;
+      const updatedProfile = { ...cleanProfile, profilePhotoUrl: newPhotoUrl };
+      
+      await api.post("/user/profile", updatedProfile);
+      
+      // 3. Update State
+      setPhoto(`${newPhotoUrl}?t=${new Date().getTime()}`);
+      alert("Profile photo updated!");
+
+    } catch (err) {
+      console.error("Upload failed", err);
+      alert("Failed to upload photo.");
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleBuyMedicines = (meds) => {
     setSelectedMeds(meds);
     setActivePage("pharmacy");
+  };
+
+  const handleImageError = (e) => {
+    e.target.src = "https://cdn-icons-png.flaticon.com/512/847/847969.png";
   };
 
   const renderPage = () => {
@@ -51,7 +96,7 @@ export default function PatientDashboard({ user, logout }) {
       case "medication": return <Medication />;
       case "doctor": return <YourDoctor />;
       case "pharmacy": return <Pharmacy selectedMeds={selectedMeds} clearSelection={() => setActivePage("track")} />;
-      case "track": return <TrackOrders />; // ✅ NEW
+      case "track": return <TrackOrders />;
       default:
         return (
           <section className="dashboard-grid">
@@ -87,8 +132,27 @@ export default function PatientDashboard({ user, logout }) {
         <h2 className="brand">MedicationTrack</h2>
 
         <div className="profile-box">
-          <img src={photo} alt="Profile" />
+          <div className="avatar-wrapper">
+            <img 
+              src={photo} 
+              alt="Profile" 
+              onError={handleImageError} 
+              className="sidebar-avatar" 
+            />
+            <label htmlFor="sidebar-photo-upload" className="camera-icon">
+              📷
+            </label>
+            <input 
+              type="file" 
+              id="sidebar-photo-upload" 
+              accept="image/*" 
+              onChange={handlePhotoUpload} 
+              hidden 
+              disabled={uploading}
+            />
+          </div>
           <p className="username">{user?.username || user?.email.split('@')[0]}</p>
+          {uploading && <span className="uploading-text">Uploading...</span>}
         </div>
 
         <ul className="menu">
@@ -113,7 +177,7 @@ export default function PatientDashboard({ user, logout }) {
           </div>
           <div className="account">
             <span>{user?.username || user?.email}</span>
-            <img src={photo} alt="Account" />
+            <img src={photo} alt="Account" onError={handleImageError} />
           </div>
         </header>
 

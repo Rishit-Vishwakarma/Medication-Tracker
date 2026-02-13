@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
 import api from "../../api";
-import "./MyProfile.css";
+import "../Doctor/DoctorProfile.css"; // Reuse Doctor Profile CSS
 
 export default function MyProfile({ user }) {
-  const [openEdit, setOpenEdit] = useState(false);
   const [profile, setProfile] = useState({
     age: "",
     gender: "",
@@ -23,213 +22,95 @@ export default function MyProfile({ user }) {
   const fetchProfile = async () => {
     try {
       const response = await api.get("/user/profile");
-      setProfile(response.data);
+      setProfile({
+        age: response.data.age || "",
+        gender: response.data.gender || "",
+        bloodGroup: response.data.bloodGroup || "",
+        knownDisease: response.data.knownDisease || "",
+        symptoms: response.data.symptoms || "",
+        allergies: response.data.allergies || "",
+        note: response.data.note || ""
+      });
     } catch (err) {
-      console.log("Profile not found, user needs to create one.");
+      console.log("Profile not found");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleChange = (e) =>
+  const handleChange = (e) => {
     setProfile({ ...profile, [e.target.name]: e.target.value });
+  };
 
-  const handleSave = async () => {
+  const handleSave = async (e) => {
+    e.preventDefault();
+    setMessage("");
     try {
       await api.post("/user/profile", profile);
       setMessage("✅ Profile updated successfully!");
-      setOpenEdit(false);
     } catch (err) {
       setMessage("❌ Failed to update profile.");
     }
   };
 
-  const downloadPDF = () => {
-    window.print();
-  };
-
   if (loading) return <div className="loading">Loading Profile...</div>;
 
   return (
-    <div className="patient-page">
+    <div className="doctor-profile-container">
+      <div className="profile-card">
+        <h2>My Medical Profile</h2>
+        <p className="subtitle">Keep your health information up to date for better diagnosis.</p>
 
-      {/* HEADER */}
-      <div className="profile-header">
-        <h2>My Profile</h2>
-        <p className="subtitle">Personal & medical information</p>
-      </div>
+        {message && <div className={`status-banner ${message.includes('✅') ? 'success' : 'error'}`}>{message}</div>}
 
-      {message && <p className="status-msg">{message}</p>}
+        <form onSubmit={handleSave} className="profile-form">
+          
+          {/* Photo upload moved to Sidebar */}
 
-      {/* BASIC INFO */}
-      <div className="profile-section">
-        <h3>Basic Information</h3>
-
-        <div className="profile-grid">
-          <div className="profile-item">
-            <label>Email</label>
-            <p className="verified">
-              {user?.email} <span>✔ Verified</span>
-            </p>
-          </div>
-
-          <div className="profile-item">
-            <label>Role</label>
-            <p><span className="role-chip">{user?.role}</span></p>
-          </div>
-        </div>
-      </div>
-
-      {/* PERSONAL DETAILS */}
-      <div className="profile-section">
-        <h3>Personal Details</h3>
-
-        <div className="profile-grid">
-          <div className="profile-item">
-            <label>Age</label>
-            <p>{profile.age || "Not set"}</p>
-          </div>
-
-          <div className="profile-item">
-            <label>Gender</label>
-            <p>{profile.gender || "Not set"}</p>
-          </div>
-
-          <div className="profile-item">
-            <label>Blood Group</label>
-            <p>{profile.bloodGroup || "Not set"}</p>
-          </div>
-        </div>
-      </div>
-
-      {/* MEDICAL INFO */}
-      <div className="profile-section">
-        <h3>Medical Information</h3>
-
-        <ul className="medical-list">
-          <li className="medical-item">
-            <strong>Allergies</strong>
-            <span>{profile.allergies || "None"}</span>
-          </li>
-          <li className="medical-item">
-            <strong>Known Diseases</strong>
-            <span>{profile.knownDisease || "None"}</span>
-          </li>
-          <li className="medical-item">
-            <strong>Current Symptoms</strong>
-            <span>{profile.symptoms || "None"}</span>
-          </li>
-          <li className="medical-item">
-            <strong>Additional Note</strong>
-            <span>{profile.note || "None"}</span>
-          </li>
-        </ul>
-      </div>
-
-      {/* ACTIONS */}
-      <div className="profile-actions">
-        <button className="primary-btn" onClick={() => setOpenEdit(true)}>
-          ✏️ Edit Profile
-        </button>
-        <button className="outline-btn" onClick={downloadPDF}>
-          📄 Download Profile
-        </button>
-      </div>
-
-      {/* EDIT MODAL */}
-      {openEdit && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <h3>Edit Profile</h3>
-
-            <div className="modal-content-scroll">
-                <div className="input-group">
-                    <label>Age</label>
-                    <input
-                      name="age"
-                      type="number"
-                      value={profile.age}
-                      onChange={handleChange}
-                      placeholder="Age"
-                    />
-                </div>
-
-                <div className="input-group">
-                    <label>Gender</label>
-                    <select
-                      name="gender"
-                      value={profile.gender}
-                      onChange={handleChange}
-                    >
-                      <option value="">Select</option>
-                      <option value="Male">Male</option>
-                      <option value="Female">Female</option>
-                      <option value="Other">Other</option>
-                    </select>
-                </div>
-
-                <div className="input-group">
-                    <label>Blood Group</label>
-                    <input
-                      name="bloodGroup"
-                      value={profile.bloodGroup}
-                      onChange={handleChange}
-                      placeholder="e.g. O+"
-                    />
-                </div>
-
-                <div className="input-group">
-                    <label>Known Diseases</label>
-                    <input
-                      name="knownDisease"
-                      value={profile.knownDisease}
-                      onChange={handleChange}
-                      placeholder="e.g. Diabetes"
-                    />
-                </div>
-
-                <div className="input-group">
-                    <label>Allergies</label>
-                    <input
-                      name="allergies"
-                      value={profile.allergies}
-                      onChange={handleChange}
-                      placeholder="e.g. Peanuts"
-                    />
-                </div>
-
-                <div className="input-group">
-                    <label>Symptoms</label>
-                    <textarea
-                      name="symptoms"
-                      value={profile.symptoms}
-                      onChange={handleChange}
-                      placeholder="Describe your symptoms"
-                    />
-                </div>
-
-                <div className="input-group">
-                    <label>Additional Note</label>
-                    <textarea
-                      name="note"
-                      value={profile.note}
-                      onChange={handleChange}
-                      placeholder="Any extra information for the doctor..."
-                    />
-                </div>
+          <div className="form-grid">
+            <div className="input-group">
+              <label>Age</label>
+              <input type="number" name="age" value={profile.age} onChange={handleChange} placeholder="e.g. 25" required />
             </div>
-
-            <div className="modal-actions">
-              <button className="outline-btn" onClick={() => setOpenEdit(false)}>
-                Cancel
-              </button>
-              <button className="primary-btn" onClick={handleSave}>
-                Save Changes
-              </button>
+            <div className="input-group">
+              <label>Gender</label>
+              <select name="gender" value={profile.gender} onChange={handleChange} required>
+                <option value="">Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div className="input-group">
+              <label>Blood Group</label>
+              <input type="text" name="bloodGroup" value={profile.bloodGroup} onChange={handleChange} placeholder="e.g. O+" />
+            </div>
+            <div className="input-group">
+              <label>Known Diseases</label>
+              <input type="text" name="knownDisease" value={profile.knownDisease} onChange={handleChange} placeholder="e.g. Diabetes, Hypertension" />
             </div>
           </div>
-        </div>
-      )}
+
+          <div className="input-group full-width">
+            <label>Allergies</label>
+            <input type="text" name="allergies" value={profile.allergies} onChange={handleChange} placeholder="e.g. Peanuts, Penicillin" />
+          </div>
+
+          <div className="input-group full-width">
+            <label>Current Symptoms</label>
+            <textarea name="symptoms" value={profile.symptoms} onChange={handleChange} placeholder="Describe what you are feeling..." />
+          </div>
+
+          <div className="input-group full-width">
+            <label>Additional Note</label>
+            <textarea name="note" value={profile.note} onChange={handleChange} placeholder="Any other information for the doctor..." />
+          </div>
+
+          <button type="submit" className="save-btn">
+            Save Profile
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

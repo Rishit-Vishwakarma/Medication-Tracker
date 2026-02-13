@@ -1,178 +1,126 @@
 import { useState } from "react";
-import { FiEye, FiEyeOff } from "react-icons/fi";
-import "./ForgotPassword.css";
+import api from "../api";
+import "./Login.css"; // Reuse login styles for consistency
 
 export default function ForgotPassword({ backToLogin }) {
-  const [method, setMethod] = useState("email"); // email | mobile
-  const [step, setStep] = useState(1); // 1 = get OTP, 2 = verify OTP, 3 = set password
-
-  const [form, setForm] = useState({
-    email: "",
-    mobile: "",
-    otp: "",
-    newPassword: "",
-    confirmPassword: ""
-  });
-
-  const [showNew, setShowNew] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
+  const [step, setStep] = useState(1); // 1: Email, 2: OTP, 3: New Password
+  const [email, setEmail] = useState("");
+  const [otp, setOtp] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleChange = (e) => {
+  const handleRequestOtp = async (e) => {
+    e.preventDefault();
+    setLoading(true);
     setError("");
-    setForm({ ...form, [e.target.name]: e.target.value });
+    try {
+      await api.post("/password-reset/request-otp", { email });
+      setStep(2);
+      setMessage("OTP sent to your email.");
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to send OTP.");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  /* STEP 1: SEND OTP */
-  const sendOtp = () => {
-    if (method === "email" && !form.email) {
-      setError("Email is required");
-      return;
+  const handleVerifyOtp = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    try {
+      await api.post("/password-reset/verify-otp", { email, otp });
+      setStep(3);
+      setMessage("OTP verified. Enter your new password.");
+    } catch (err) {
+      setError(err.response?.data?.message || "Invalid OTP.");
+    } finally {
+      setLoading(false);
     }
-    if (method === "mobile" && !form.mobile) {
-      setError("Mobile number is required");
-      return;
-    }
-    console.log("OTP Sent to:", method === "email" ? form.email : form.mobile);
-    setStep(2);
   };
 
-  /* STEP 2: VERIFY OTP */
-  const verifyOtp = () => {
-    if (form.otp !== "123456") {
-      setError("Invalid OTP (use 123456 for demo)");
-      return;
+  const handleResetPassword = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    try {
+      await api.post("/password-reset/reset", { email, otp, newPassword });
+      setMessage("✅ Password reset successful! Redirecting to login...");
+      setTimeout(() => backToLogin(), 3000);
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to reset password.");
+    } finally {
+      setLoading(false);
     }
-    setStep(3);
-  };
-
-  /* STEP 3: RESET PASSWORD */
-  const resetPassword = () => {
-    if (form.newPassword !== form.confirmPassword) {
-      setError("Passwords do not match");
-      return;
-    }
-    console.log("Password Reset Successful:", form);
-    alert("Password reset successful");
-    backToLogin();
   };
 
   return (
-    <div className="forgot-page">
-      <div className="forgot-card">
-        <h2>Forgot Password</h2>
+    <div className="login-container">
+      <div className="login-wrapper">
+        <div className="login-brand-side">
+          <div className="brand-logo">🏥</div>
+          <h1 className="brand-title">Reset Password</h1>
+          <p className="brand-subtitle">Securely recover your account access.</p>
+        </div>
 
-        {/* STEP 1 */}
-        {step === 1 && (
-          <>
-            <p>Select verification method</p>
+        <div className="login-form-side">
+          <div className="form-header">
+            <h2>{step === 1 ? "Forgot Password?" : step === 2 ? "Verify OTP" : "New Password"}</h2>
+            <p>
+              {step === 1 ? "Enter your email to receive a reset code." : 
+               step === 2 ? `We've sent a code to ${email}` : 
+               "Create a strong new password."}
+            </p>
+          </div>
 
-            <div className="method-select">
-              <label>
-                <input
-                  type="radio"
-                  checked={method === "email"}
-                  onChange={() => setMethod("email")}
-                />
-                Email
-              </label>
+          {error && <div className="error-msg"><span>⚠️</span> {error}</div>}
+          {message && <div className="success-msg" style={{color: 'green', marginBottom: '1rem'}}><span>✅</span> {message}</div>}
 
-              <label>
-                <input
-                  type="radio"
-                  checked={method === "mobile"}
-                  onChange={() => setMethod("mobile")}
-                />
-                Mobile
-              </label>
-            </div>
+          {step === 1 && (
+            <form onSubmit={handleRequestOtp}>
+              <div className="input-group">
+                <label>Email Address</label>
+                <div className="input-wrapper">
+                  <span className="input-icon">✉️</span>
+                  <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="name@example.com" />
+                </div>
+              </div>
+              <button type="submit" className="login-btn" disabled={loading}>{loading ? "Sending..." : "Send OTP"}</button>
+            </form>
+          )}
 
-            {method === "email" && (
-              <input
-                type="email"
-                name="email"
-                placeholder="Registered Email"
-                value={form.email}
-                onChange={handleChange}
-              />
-            )}
+          {step === 2 && (
+            <form onSubmit={handleVerifyOtp}>
+              <div className="input-group">
+                <label>Enter 6-Digit OTP</label>
+                <div className="input-wrapper">
+                  <span className="input-icon">🔢</span>
+                  <input type="text" value={otp} onChange={(e) => setOtp(e.target.value)} required placeholder="000000" maxLength="6" />
+                </div>
+              </div>
+              <button type="submit" className="login-btn" disabled={loading}>{loading ? "Verifying..." : "Verify OTP"}</button>
+            </form>
+          )}
 
-            {method === "mobile" && (
-              <input
-                type="tel"
-                name="mobile"
-                placeholder="Registered Mobile Number"
-                value={form.mobile}
-                onChange={handleChange}
-                pattern="[0-9]{10}"
-              />
-            )}
+          {step === 3 && (
+            <form onSubmit={handleResetPassword}>
+              <div className="input-group">
+                <label>New Password</label>
+                <div className="input-wrapper">
+                  <span className="input-icon">🔒</span>
+                  <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required placeholder="Min 8 characters" />
+                </div>
+              </div>
+              <button type="submit" className="login-btn" disabled={loading}>{loading ? "Resetting..." : "Update Password"}</button>
+            </form>
+          )}
 
-            {error && <p className="error-text">{error}</p>}
-
-            <button onClick={sendOtp}>Send OTP</button>
-          </>
-        )}
-
-        {/* STEP 2 */}
-        {step === 2 && (
-          <>
-            <p>Enter OTP</p>
-
-            <input
-              type="text"
-              name="otp"
-              placeholder="Enter OTP (123456)"
-              value={form.otp}
-              onChange={handleChange}
-            />
-
-            {error && <p className="error-text">{error}</p>}
-
-            <button onClick={verifyOtp}>Verify OTP</button>
-          </>
-        )}
-
-        {/* STEP 3 */}
-        {step === 3 && (
-          <>
-            <p>Set New Password</p>
-
-            <div className="password-box">
-              <input
-                type={showNew ? "text" : "password"}
-                name="newPassword"
-                placeholder="New Password"
-                value={form.newPassword}
-                onChange={handleChange}
-              />
-              <span onClick={() => setShowNew(!showNew)}>
-                {showNew ? <FiEyeOff /> : <FiEye />}
-              </span>
-            </div>
-
-            <div className="password-box">
-              <input
-                type={showConfirm ? "text" : "password"}
-                name="confirmPassword"
-                placeholder="Confirm Password"
-                value={form.confirmPassword}
-                onChange={handleChange}
-              />
-              <span onClick={() => setShowConfirm(!showConfirm)}>
-                {showConfirm ? <FiEyeOff /> : <FiEye />}
-              </span>
-            </div>
-
-            {error && <p className="error-text">{error}</p>}
-
-            <button onClick={resetPassword}>Reset Password</button>
-          </>
-        )}
-
-        <p className="back-login">
-          <span onClick={backToLogin}>Back to Login</span>
-        </p>
+          <p className="switch-text">
+            Remembered? <span onClick={backToLogin}>Back to Login</span>
+          </p>
+        </div>
       </div>
     </div>
   );

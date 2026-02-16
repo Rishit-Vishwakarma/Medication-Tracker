@@ -1,71 +1,55 @@
 .appointment-analytics {
-  background: #fff;
-  padding: 30px;
-  border-radius: 18px;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-/* HEADER */
+.page-header {
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .page-header h2 {
-  font-size: 26px;
-  color: #0b7c93;
+  font-size: 1.8rem;
+  color: #0f172a;
+  margin: 0;
 }
 
-.page-header p {
-  margin-top: 6px;
-  color: #555;
+/* Filter Tabs */
+.filter-tabs {
+  display: flex;
+  gap: 0.5rem;
+  background: #f1f5f9;
+  padding: 0.25rem;
+  border-radius: 10px;
 }
 
-/* KPI CARDS */
-.kpi-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 20px;
-  margin: 25px 0;
+.filter-tabs button {
+  background: none;
+  border: none;
+  padding: 0.5rem 1.25rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s;
 }
 
-.kpi {
-  background: #f4f9fb;
-  padding: 20px;
-  border-radius: 14px;
-  text-align: center;
+.filter-tabs button.active {
+  background: white;
+  color: #0ea5e9;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
-.kpi h3 {
-  font-size: 30px;
-  margin-bottom: 6px;
-}
-
-.kpi span {
-  font-size: 14px;
-  color: #666;
-}
-
-.kpi.success { background: #e6f7ee; color: #15803d; }
-.kpi.warning { background: #fff7e6; color: #d97706; }
-.kpi.danger  { background: #feecec; color: #dc2626; }
-
-/* CHARTS */
-.charts {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 25px;
-  margin-bottom: 30px;
-}
-
-.chart-card {
-  background: #fafafa;
-  padding: 20px;
+.table-section {
+  background: white;
   border-radius: 16px;
-}
-
-.chart-card h4 {
-  margin-bottom: 10px;
-  color: #333;
-}
-
-/* TABLE */
-.table-section h4 {
-  margin-bottom: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
 }
 
 table {
@@ -73,27 +57,92 @@ table {
   border-collapse: collapse;
 }
 
-th, td {
-  padding: 14px;
-  font-size: 14px;
-}
-
-thead {
-  background: #f0f6f8;
-}
-
-tr {
-  border-bottom: 1px solid #eee;
-}
-
-/* STATUS BADGE */
-.status {
-  padding: 6px 12px;
-  border-radius: 14px;
-  font-size: 12px;
+th {
+  background-color: #f8fafc;
+  padding: 1.25rem;
+  text-align: left;
   font-weight: 600;
+  color: #64748b;
+  border-bottom: 1px solid #e2e8f0;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
 }
 
-.status.completed { background: #e6f7ee; color: #15803d; }
-.status.pending   { background: #fff7e6; color: #d97706; }
-.status.cancelled { background: #feecec; color: #dc2626; }
+td {
+  padding: 1.25rem;
+  border-bottom: 1px solid #f1f5f9;
+  color: #334155;
+  font-size: 0.95rem;
+  vertical-align: middle;
+}
+
+/* Status Badges */
+.status {
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  display: inline-block;
+}
+
+.status.pending { background: #fef3c7; color: #92400e; }
+.status.confirmed { background: #dcfce7; color: #166534; }
+.status.cancelled { background: #fee2e2; color: #991b1b; }
+.status.completed { background: #e0f2fe; color: #0369a1; }
+
+/* Action Buttons Container */
+.action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Icon Buttons (Confirm & Cancel) */
+.icon-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.25rem;
+  transition: transform 0.2s, color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}
+
+.icon-btn:hover {
+  transform: scale(1.2);
+  background-color: #f8fafc;
+}
+
+.icon-btn.confirm {
+  color: #16a34a;
+  font-weight: 800;
+}
+
+.icon-btn.cancel {
+  color: #ef4444;
+  font-weight: 800;
+}
+
+/* Mark Done Button */
+.view-btn {
+  background-color: #0ea5e9;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  border: none;
+  transition: background 0.2s;
+}
+
+.view-btn:hover {
+  background-color: #0284c7;
+}

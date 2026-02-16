@@ -60,7 +60,6 @@ export default function ForgotPassword({ backToLogin }) {
     <div className="login-container">
       <div className="login-wrapper">
         <div className="login-brand-side">
-          <div className="brand-logo">🏥</div>
           <h1 className="brand-title">Reset Password</h1>
           <p className="brand-subtitle">Securely recover your account access.</p>
         </div>
@@ -83,7 +82,6 @@ export default function ForgotPassword({ backToLogin }) {
               <div className="input-group">
                 <label>Email Address</label>
                 <div className="input-wrapper">
-                  <span className="input-icon">✉️</span>
                   <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="name@example.com" />
                 </div>
               </div>

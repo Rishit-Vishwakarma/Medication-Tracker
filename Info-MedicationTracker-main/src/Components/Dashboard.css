@@ -1,5 +1,6 @@
-/* Professional Doctor Dashboard UI */
-:root {
+/* SCOPED DOCTOR DASHBOARD STYLES */
+
+.doctor-dashboard-wrapper {
   --sidebar-bg: #0f172a;
   --sidebar-text: #94a3b8;
   --sidebar-text-hover: #ffffff;
@@ -7,27 +8,23 @@
   --bg-light: #f8fafc;
   --text-main: #1e293b;
   --sidebar-width: 260px;
-}
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
+  display: flex;
+  height: 100vh;
+  width: 100%;
   font-family: 'Inter', sans-serif;
   background-color: var(--bg-light);
   color: var(--text-main);
 }
 
-.dashboard-container {
+.doctor-dashboard-wrapper .dashboard-container {
   display: flex;
+  width: 100%;
   height: 100vh;
 }
 
 /* Sidebar */
-.sidebar {
+.doctor-dashboard-wrapper .sidebar {
   width: var(--sidebar-width);
   background-color: var(--sidebar-bg);
   color: var(--sidebar-text);
@@ -38,26 +35,18 @@ body {
   display: flex;
   flex-direction: column;
   padding: 2rem 1.5rem;
-  transition: transform 0.3s ease;
   z-index: 1000;
-  overflow-y: auto;
-  scrollbar-width: none;
 }
 
-.sidebar::-webkit-scrollbar {
-  display: none;
-}
-
-.brand {
+.doctor-dashboard-wrapper .brand {
   font-size: 1.5rem;
   font-weight: 700;
   text-align: center;
   margin-bottom: 2.5rem;
   color: white;
-  letter-spacing: 0.5px;
 }
 
-.profile-box {
+.doctor-dashboard-wrapper .profile-box {
   text-align: center;
   padding: 1.5rem;
   background: rgba(255, 255, 255, 0.03);
@@ -66,8 +55,7 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-/* FIXED AVATAR SIZE */
-.sidebar-avatar {
+.doctor-dashboard-wrapper .sidebar-avatar {
   width: 72px !important;
   height: 72px !important;
   border-radius: 50%;
@@ -79,20 +67,20 @@ body {
   margin-right: auto;
 }
 
-.username {
+.doctor-dashboard-wrapper .username {
   font-weight: 600;
   font-size: 0.95rem;
   color: white;
 }
 
-.menu {
+.doctor-dashboard-wrapper .menu {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   flex-grow: 1;
 }
 
-.menu button {
+.doctor-dashboard-wrapper .menu button {
   background: none;
   border: none;
   color: var(--sidebar-text);
@@ -103,34 +91,20 @@ body {
   font-size: 0.95rem;
   font-weight: 500;
   transition: all 0.2s;
-  display: flex;
-  align-items: center;
 }
 
-.menu button:hover {
+.doctor-dashboard-wrapper .menu button:hover {
   background-color: rgba(255, 255, 255, 0.05);
   color: var(--sidebar-text-hover);
 }
 
-.menu button.active {
+.doctor-dashboard-wrapper .menu button.active {
   background-color: rgba(255, 255, 255, 0.2);
   color: white;
   font-weight: 700;
 }
 
-/* 🔴 BLINKING EFFECT */
-@keyframes blink-red {
-  0% { color: #ef4444; opacity: 1; }
-  50% { color: #ffffff; opacity: 0.7; }
-  100% { color: #ef4444; opacity: 1; }
-}
-
-.blink-profile {
-  animation: blink-red 1.5s infinite;
-  font-weight: 700 !important;
-}
-
-.logout-btn {
+.doctor-dashboard-wrapper .logout-btn {
   margin-top: auto;
   background-color: transparent;
   color: #ef4444;
@@ -139,209 +113,124 @@ body {
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   text-align: left;
-  width: 100%;
-}
-
-.logout-btn:hover {
-  background-color: rgba(239, 68, 68, 0.1);
-  color: #f87171;
 }
 
 /* Main Content */
-.main-content {
+.doctor-dashboard-wrapper .main-content {
   flex-grow: 1;
   margin-left: var(--sidebar-width);
-  padding: 2.5rem;
-  overflow-y: auto;
-  background-color: var(--bg-light);
-}
-
-.content-section h2 {
-  font-size: 1.75rem;
-  color: #0f172a;
-  margin-bottom: 2rem;
-}
-
-/* Patient Table */
-.patient-list-card {
-  background: white;
-  border-radius: 20px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
-  overflow: hidden;
-  border: 1px solid #e2e8f0;
-}
-
-.patient-list-card table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.patient-list-card th {
-  background-color: #f8fafc;
-  padding: 1.25rem;
-  text-align: left;
-  font-weight: 600;
-  color: #64748b;
-  border-bottom: 1px solid #e2e8f0;
-  text-transform: uppercase;
-  font-size: 0.75rem;
-  letter-spacing: 0.05em;
-}
-
-.patient-list-card td {
-  padding: 1.25rem;
-  border-bottom: 1px solid #f1f5f9;
-  color: #334155;
-  font-size: 0.95rem;
-}
-
-.view-btn {
-  background-color: #0284c7;
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s;
-  font-size: 0.85rem;
-}
-
-.view-btn:hover {
-  background-color: #0369a1;
-}
-
-/* =========================================
-   REDESIGNED PRESCRIPTION MODAL
-========================================= */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(15, 23, 42, 0.6);
-  backdrop-filter: blur(8px);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-  padding: 2rem;
-}
-
-.modal-content.split-view {
-  background: white;
-  width: 100%;
-  max-width: 1100px;
-  height: 85vh;
-  border-radius: 24px;
   display: flex;
   flex-direction: column;
+  height: 100vh;
   overflow: hidden;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  position: relative;
-  z-index: 10000;
+  padding: 0;
 }
 
-.modal-header {
-  padding: 1.5rem 2.5rem;
-  border-bottom: 1px solid #e2e8f0;
+/* Topbar */
+.doctor-dashboard-wrapper .doctor-topbar {
+  background: white;
+  padding: 0 2.5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: white;
+  border-bottom: 1px solid #e2e8f0;
+  height: 70px;
   flex-shrink: 0;
-}
-
-.modal-header h2 {
+  position: sticky;
+  top: 0;
+  z-index: 900;
   margin: 0;
-  font-size: 1.5rem;
-  color: #0f172a;
-  font-weight: 700;
 }
 
-.close-btn {
-  background: #f1f5f9;
-  border: none;
+.doctor-dashboard-wrapper .topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.doctor-dashboard-wrapper .doctor-account {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.doctor-dashboard-wrapper .doctor-account span {
+  font-weight: 600;
+  color: #334155;
+}
+
+.doctor-dashboard-wrapper .doctor-account img {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  cursor: pointer;
-  font-size: 1.25rem;
+  border: 2px solid #e2e8f0;
+  object-fit: cover;
+}
+
+.doctor-dashboard-wrapper .dashboard-page-content {
+  padding: 2.5rem;
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+/* =========================================
+   DOCTOR DASHBOARD SUMMARY
+========================================= */
+.doctor-dashboard-wrapper .doctor-dashboard-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.doctor-dashboard-wrapper .welcome-banner h2 {
+  font-size: 1.75rem;
+  color: #0f172a;
+  margin-bottom: 0.5rem;
+}
+
+.doctor-dashboard-wrapper .welcome-banner p {
   color: #64748b;
+}
+
+.doctor-dashboard-wrapper .stats-grid-doctor {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+}
+
+.doctor-dashboard-wrapper .stat-card-doctor {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 20px;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  cursor: pointer;
   transition: all 0.2s;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+}
+
+.doctor-dashboard-wrapper .stat-card-doctor:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+  border-color: #0ea5e9;
+}
+
+.doctor-dashboard-wrapper .stat-icon {
+  font-size: 2rem;
+  background: #f1f5f9;
+  width: 60px;
+  height: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 14px;
 }
 
-.close-btn:hover {
-  background-color: #e2e8f0;
-  color: #ef4444;
-}
-
-.modal-body-split {
-  display: flex;
-  flex: 1;
-  overflow: hidden;
-  height: 100%;
-}
-
-/* Left Side - Patient Profile */
-.patient-profile-side {
-  flex: 1;
-  min-width: 320px;
-  background-color: #f8fafc;
-  padding: 2.5rem;
-  border-right: 1px solid #e2e8f0;
-  overflow-y: auto;
-  text-align: center; /* Center content */
-}
-
-.patient-profile-side h3 {
-  margin-top: 0;
-  color: #0f172a;
-  margin-bottom: 2rem;
-  font-size: 1.1rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  border-bottom: 2px solid #e2e8f0;
-  padding-bottom: 0.5rem;
-  display: inline-block;
-}
-
-/* Patient Photo in Modal - CENTERED */
-.patient-modal-photo {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  border: 4px solid #0ea5e9;
-  object-fit: cover;
-  margin: 0 auto 1.5rem auto; /* Centered */
-  display: block;
-  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.2);
-}
-
-.profile-info-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  text-align: left; /* Reset text alignment for info */
-}
-
-.info-item {
-  background: white;
-  padding: 1rem;
-  border-radius: 12px;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-}
-
-.info-item label {
+.doctor-dashboard-wrapper .stat-info label {
   display: block;
   font-size: 0.75rem;
   text-transform: uppercase;
@@ -351,85 +240,254 @@ body {
   margin-bottom: 0.25rem;
 }
 
-.info-item p {
-  font-size: 1.05rem;
-  color: #1e293b;
-  font-weight: 600;
+.doctor-dashboard-wrapper .stat-info h3 {
   margin: 0;
+  font-size: 1.5rem;
+  color: #0f172a;
+  font-weight: 800;
 }
 
-.info-item p.highlight {
-  color: #0ea5e9;
+.doctor-dashboard-wrapper .quick-actions-doctor h3 {
+  font-size: 1.1rem;
+  color: #0f172a;
+  margin-bottom: 1rem;
 }
 
-.note-box {
-  background: #fff7ed;
-  border-color: #ffedd5;
-  color: #c2410c;
-  font-style: italic;
+.doctor-dashboard-wrapper .action-btns {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
 }
 
-/* Right Side - Prescription Form */
-.prescription-form-side {
-  flex: 1.5;
-  padding: 2.5rem;
-  overflow-y: auto;
+.doctor-dashboard-wrapper .action-btns button {
+  background: white;
+  border: 1px solid #e2e8f0;
+  padding: 0.75rem 1.5rem;
+  border-radius: 10px;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.doctor-dashboard-wrapper .action-btns button:hover {
+  background: #f8fafc;
+  border-color: #0ea5e9;
+  color: #0284c7;
+}
+
+/* Patient Table Card */
+.doctor-dashboard-wrapper .patient-list-card {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+}
+
+.doctor-dashboard-wrapper .patient-list-card table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.doctor-dashboard-wrapper .patient-list-card th {
+  background-color: #f8fafc;
+  padding: 1.25rem;
+  text-align: left;
+  font-weight: 600;
+  color: #64748b;
+  border-bottom: 1px solid #e2e8f0;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+}
+
+.doctor-dashboard-wrapper .patient-list-card td {
+  padding: 1.25rem;
+  border-bottom: 1px solid #f1f5f9;
+  color: #334155;
+}
+
+.doctor-dashboard-wrapper .view-btn {
+  background-color: #0284c7;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* =========================================
+   RE-FIXED PRESCRIPTION MODAL UI
+========================================= */
+.doctor-dashboard-wrapper .modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  padding: 2rem;
+}
+
+.doctor-dashboard-wrapper .modal-content.split-view {
+  background: white;
+  width: 100%;
+  max-width: 1100px;
+  height: 85vh;
+  border-radius: 24px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.doctor-dashboard-wrapper .modal-header {
+  padding: 1.5rem 2.5rem;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   background: white;
 }
 
-.prescription-form-side h3 {
+.doctor-dashboard-wrapper .modal-body-split {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* LEFT SIDE - PATIENT PROFILE */
+.doctor-dashboard-wrapper .patient-profile-side {
+  flex: 1;
+  min-width: 350px;
+  background-color: #f8fafc;
+  padding: 2rem;
+  border-right: 1px solid #e2e8f0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.doctor-dashboard-wrapper .patient-profile-side h3 {
   margin-top: 0;
   color: #0f172a;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   font-size: 1.1rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   border-bottom: 2px solid #e2e8f0;
   padding-bottom: 0.5rem;
-  display: inline-block;
+  width: 100%;
+  text-align: center;
 }
 
-.presc-form {
+.doctor-dashboard-wrapper .patient-modal-photo {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  border: 4px solid #0ea5e9;
+  object-fit: cover;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.2);
+}
+
+.doctor-dashboard-wrapper .profile-info-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+}
+
+.doctor-dashboard-wrapper .info-item {
+  background: white;
+  padding: 0.875rem 1.25rem;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.doctor-dashboard-wrapper .info-item label {
+  display: block;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  color: #94a3b8;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.2rem;
+}
+
+.doctor-dashboard-wrapper .info-item p {
+  font-size: 0.95rem;
+  color: #1e293b;
+  font-weight: 600;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.doctor-dashboard-wrapper .info-item p.highlight {
+  color: #0ea5e9;
+}
+
+.doctor-dashboard-wrapper .note-box {
+  background: #fff7ed;
+  border-color: #ffedd5;
+}
+
+.doctor-dashboard-wrapper .note-box p {
+  color: #c2410c;
+  font-style: italic;
+}
+
+/* RIGHT SIDE - FORM */
+.doctor-dashboard-wrapper .prescription-form-side {
+  flex: 1.5;
+  padding: 2.5rem;
+  overflow-y: auto;
+  background: white;
+}
+
+.doctor-dashboard-wrapper .presc-form {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
 
-.input-group {
+.doctor-dashboard-wrapper .input-group {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
-.input-group label {
-  font-weight: 600;
+.doctor-dashboard-wrapper .input-group label {
+  font-weight: 700;
   color: #334155;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
+  text-transform: uppercase;
 }
 
-.input-group input, .input-group textarea {
+.doctor-dashboard-wrapper .input-group input,
+.doctor-dashboard-wrapper .input-group textarea {
   padding: 1rem;
   border: 1px solid #cbd5e1;
   border-radius: 12px;
-  font-size: 1rem;
   background-color: #f8fafc;
-  transition: all 0.2s;
+  font-size: 1rem;
+  transition: border-color 0.2s;
 }
 
-.input-group input:focus, .input-group textarea:focus {
+.doctor-dashboard-wrapper .input-group input:focus,
+.doctor-dashboard-wrapper .input-group textarea:focus {
   outline: none;
   border-color: #0ea5e9;
   background-color: white;
-  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
 }
 
-.input-group textarea {
-  min-height: 120px;
-  resize: vertical;
-}
-
-.primary-btn {
+.doctor-dashboard-wrapper .primary-btn {
   background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
   color: white;
   border: none;
@@ -438,43 +496,48 @@ body {
   font-weight: 700;
   font-size: 1.1rem;
   cursor: pointer;
-  margin-top: 1rem;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: transform 0.2s;
 }
 
-.primary-btn:hover {
+.doctor-dashboard-wrapper .primary-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 15px -3px rgba(2, 132, 199, 0.3);
 }
 
-.status-msg {
+.doctor-dashboard-wrapper .view-reports-btn {
+  width: 100%;
+  background: white;
+  border: 2px solid #0ea5e9;
+  color: #0ea5e9;
+  padding: 0.75rem;
+  border-radius: 10px;
+  font-weight: 700;
   margin-top: 1.5rem;
-  padding: 1rem;
-  border-radius: 12px;
-  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.doctor-dashboard-wrapper .view-reports-btn:hover {
+  background: #f0f9ff;
+}
+
+.doctor-dashboard-wrapper .report-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  margin-top: 0.5rem;
+  width: 100%;
+}
+
+.doctor-dashboard-wrapper .report-view-link {
+  text-decoration: none;
+  color: #0284c7;
   font-weight: 600;
-}
-
-.status-msg.success {
-  background-color: #f0fdf4;
-  color: #16a34a;
-  border: 1px solid #dcfce7;
-}
-
-.status-msg.error {
-  background-color: #fef2f2;
-  color: #ef4444;
-  border: 1px solid #fee2e2;
-}
-
-/* Mobile Responsiveness */
-@media (max-width: 768px) {
-  .modal-body-split {
-    flex-direction: column;
-  }
-  .patient-profile-side {
-    border-right: none;
-    border-bottom: 1px solid #e2e8f0;
-    max-height: 300px;
-  }
+  background: #e0f2fe;
+  padding: 0.25rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
 }

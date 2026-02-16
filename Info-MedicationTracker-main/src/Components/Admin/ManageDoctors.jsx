@@ -3,98 +3,150 @@ import api from "../../api";
 import "./ManageDoctors.css";
 
 export default function ManageDoctors() {
+  const [activeSubTab, setActiveSubTab] = useState("patients");
+  const [patients, setPatients] = useState([]);
   const [doctors, setDoctors] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [expandedDoctor, setExpandedDoctor] = useState(null);
+  const [selectedItem, setSelectedPatient] = useState(null); // For Modal
 
   useEffect(() => {
-    fetchDoctors();
-    // 🔄 AUTO-POLLING: Refresh list every 2 seconds
-    const interval = setInterval(fetchDoctors, 2000);
-    return () => clearInterval(interval);
+    fetchData();
   }, []);
 
-  const fetchDoctors = async () => {
+  const fetchData = async () => {
+    setLoading(true);
     try {
-      const response = await api.get("/admin/doctors-with-patients");
-      setDoctors(response.data);
+      const [pRes, dRes] = await Promise.all([
+        api.get("/admin/users"),
+        api.get("/admin/doctors")
+      ]);
+      setPatients(pRes.data);
+      setDoctors(dRes.data);
     } catch (err) {
-      console.error("Failed to fetch doctors", err);
+      console.error("Failed to fetch records");
     } finally {
       setLoading(false);
     }
   };
 
-  const toggleExpand = (doctorId) => {
-    if (expandedDoctor === doctorId) {
-      setExpandedDoctor(null);
-    } else {
-      setExpandedDoctor(doctorId);
-    }
+  const viewPatientReports = async (patient) => {
+      try {
+          const res = await api.get(`/reports/user/${patient.id}`);
+          setSelectedPatient({ ...patient, reports: res.data, type: 'patient' });
+      } catch (err) {
+          setSelectedPatient({ ...patient, reports: [], type: 'patient' });
+      }
   };
 
-  const handleRemovePatient = async (userId) => {
-    if (!window.confirm("Are you sure you want to unassign this patient?")) return;
-    try {
-      await api.delete(`/admin/remove-doctor/${userId}`);
-      fetchDoctors();
-    } catch (err) {
-      alert("Failed to remove patient.");
-    }
+  const viewDoctorDetails = async (doctor) => {
+      try {
+          const res = await api.get(`/doctor/profile-by-id/${doctor.doctorId}`);
+          setSelectedPatient({ ...doctor, profile: res.data, type: 'doctor' });
+      } catch (err) {
+          setSelectedPatient({ ...doctor, profile: null, type: 'doctor' });
+      }
   };
 
   return (
-    <div className="manage-container">
-      <div className="manage-header">
-        <h2>Manage Doctors</h2>
-        <p>View doctors and their assigned patients</p>
+    <div className="records-container">
+      <div className="page-header">
+        <h2>Medical Records Hub</h2>
+        <p>Oversee all patient health data and doctor credentials.</p>
       </div>
-      
-      <div className="doctors-list">
-        {loading ? <p>Loading...</p> : doctors.map((doc) => (
-          <div key={doc.doctorId} className={`doctor-card-admin ${expandedDoctor === doc.doctorId ? "expanded" : ""}`}>
-            <div className="doctor-header-admin" onClick={() => toggleExpand(doc.doctorId)}>
-              <div className="doc-info">
-                <h3>👨‍⚕️ {doc.userName}</h3>
-                <p>{doc.email}</p>
-              </div>
-              <div className="doc-stats">
-                <span>{doc.users ? doc.users.length : 0} Patients</span>
-                <span className="arrow">{expandedDoctor === doc.doctorId ? "▲" : "▼"}</span>
-              </div>
-            </div>
 
-            {expandedDoctor === doc.doctorId && (
-              <div className="patient-list-admin">
-                {(!doc.users || doc.users.length === 0) ? (
-                  <p className="no-patients">No patients assigned.</p>
-                ) : (
-                  <table className="patient-table">
-                    <thead>
-                      <tr>
-                        <th>Patient Name</th>
-                        <th>Email</th>
-                        <th>Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {doc.users.map((u) => (
-                        <tr key={u.id}>
-                          <td>{u.username}</td>
-                          <td>{u.email}</td>
-                          <td>
-                            <button className="remove-btn" onClick={() => handleRemovePatient(u.id)}>Unassign</button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                )}
-              </div>
+      <div className="sub-tabs">
+        <button className={activeSubTab === "patients" ? "active" : ""} onClick={() => setActiveSubTab("patients")}>👥 Patients</button>
+        <button className={activeSubTab === "doctors" ? "active" : ""} onClick={() => setActiveSubTab("doctors")}>👨‍⚕️ Doctors</button>
+      </div>
+
+      <div className="records-content">
+        {loading ? <p>Loading records...</p> : (
+          <div className="records-grid">
+            {activeSubTab === "patients" ? (
+              patients.map(p => (
+                <div key={p.id} className="record-card-admin">
+                  <div className="card-header">
+                    <h4>{p.username}</h4>
+                    <span className="email-tag">{p.email}</span>
+                  </div>
+                  <div className="card-body">
+                    <p><strong>Symptoms:</strong> {p.symptoms}</p>
+                    <p><strong>Doctor:</strong> {p.assignedDoctor || "Not Assigned"}</p>
+                  </div>
+                  <button className="view-details-btn" onClick={() => viewPatientReports(p)}>View Full Records</button>
+                </div>
+              ))
+            ) : (
+              doctors.map(d => (
+                <div key={d.doctorId} className="record-card-admin">
+                  <div className="card-header">
+                    <h4>Dr. {d.userName}</h4>
+                    <span className="special-tag">{d.specialization}</span>
+                  </div>
+                  <div className="card-body">
+                    <p><strong>Degree:</strong> {d.degreeName}</p>
+                    <p><strong>Email:</strong> {d.email}</p>
+                  </div>
+                  <button className="view-details-btn" onClick={() => viewDoctorDetails(d)}>View Credentials</button>
+                </div>
+              ))
             )}
           </div>
-        ))}
+        )}
       </div>
+
+      {/* DETAIL MODAL */}
+      {selectedItem && (
+        <div className="modal-overlay" onClick={() => setSelectedPatient(null)}>
+          <div className="modal-content-admin" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>{selectedItem.type === 'patient' ? 'Patient Health Record' : 'Doctor Credentials'}</h3>
+              <button className="close-btn" onClick={() => setSelectedPatient(null)}>✕</button>
+            </div>
+            <div className="modal-body">
+              {selectedItem.type === 'patient' ? (
+                <div className="patient-details-view">
+                  <div className="detail-section">
+                    <h4>Basic Info</h4>
+                    <p><strong>Name:</strong> {selectedItem.username}</p>
+                    <p><strong>Email:</strong> {selectedItem.email}</p>
+                    <p><strong>Known Diseases:</strong> {selectedItem.knownDisease}</p>
+                  </div>
+                  <div className="detail-section">
+                    <h4>Lab Reports</h4>
+                    <div className="reports-list-admin">
+                      {selectedItem.reports?.length === 0 ? <p>No reports uploaded.</p> : (
+                        selectedItem.reports?.map(r => (
+                          <a key={r.id} href={r.fileUrl} target="_blank" rel="noopener noreferrer" className="report-item-admin">
+                            📄 {r.reportName} ({r.reportDate})
+                          </a>
+                        ))
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="doctor-details-view">
+                  <div className="detail-section">
+                    <h4>Professional Profile</h4>
+                    <p><strong>Name:</strong> Dr. {selectedItem.userName}</p>
+                    <p><strong>Specialization:</strong> {selectedItem.specialization}</p>
+                    <p><strong>Degree:</strong> {selectedItem.degreeName}</p>
+                    <p><strong>Experience:</strong> {selectedItem.profile?.experienceYears || "N/A"} Years</p>
+                    <p><strong>Clinic:</strong> {selectedItem.profile?.clinicAddress || "N/A"}</p>
+                  </div>
+                  {selectedItem.profile?.degreePhotoUrl && (
+                    <div className="detail-section">
+                      <h4>Degree Certificate</h4>
+                      <img src={selectedItem.profile.degreePhotoUrl} alt="Degree" className="degree-preview-admin" />
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

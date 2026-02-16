@@ -1,143 +1,143 @@
-.manage-container {
-  max-width: 900px;
-  margin: 0 auto;
+.records-container {
+  padding: 2rem;
 }
 
-.manage-header {
-  margin-bottom: 2rem;
-}
-
-.manage-header h2 {
-  font-size: 1.8rem;
-  color: #0f172a;
-  margin-bottom: 0.5rem;
-}
-
-.manage-header p {
-  color: #64748b;
-}
-
-.doctors-list {
+.sub-tabs {
   display: flex;
-  flex-direction: column;
   gap: 1rem;
+  margin-bottom: 2rem;
+  background: #f1f5f9;
+  padding: 0.5rem;
+  border-radius: 12px;
+  width: fit-content;
 }
 
-.doctor-card-admin {
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  border: 1px solid #e2e8f0;
-  overflow: hidden;
+.sub-tabs button {
+  background: none;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
   transition: all 0.2s;
 }
 
-.doctor-card-admin:hover {
-  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
-  border-color: #0ea5e9;
+.sub-tabs button.active {
+  background: white;
+  color: #0ea5e9;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
-.doctor-card-admin.expanded {
-  border-color: #0ea5e9;
-  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+.records-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
 }
 
-.doctor-header-admin {
+.record-card-admin {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
   padding: 1.5rem;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  cursor: pointer;
-  background: white;
+  flex-direction: column;
+  gap: 1rem;
+  transition: transform 0.2s;
 }
 
-.doctor-header-admin:hover {
-  background-color: #f8fafc;
+.record-card-admin:hover {
+  transform: translateY(-5px);
+  border-color: #0ea5e9;
 }
 
-.doc-info h3 {
+.card-header h4 {
   margin: 0;
   font-size: 1.1rem;
   color: #0f172a;
-  font-weight: 600;
 }
 
-.doc-info p {
-  margin: 0.25rem 0 0;
-  color: #64748b;
-  font-size: 0.9rem;
-}
-
-.doc-stats {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  font-weight: 600;
-  color: #0ea5e9;
-  font-size: 0.9rem;
-}
-
-.arrow {
-  color: #94a3b8;
+.email-tag, .special-tag {
   font-size: 0.8rem;
-}
-
-.patient-list-admin {
-  background-color: #f8fafc;
-  padding: 1.5rem;
-  border-top: 1px solid #e2e8f0;
-  animation: slideDown 0.2s ease-out;
-}
-
-@keyframes slideDown {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.patient-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: white;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-}
-
-.patient-table th {
-  background-color: #f1f5f9;
-  padding: 1rem;
-  text-align: left;
-  font-size: 0.85rem;
   color: #64748b;
-  text-transform: uppercase;
-  font-weight: 600;
 }
 
-.patient-table td {
-  padding: 1rem;
-  border-bottom: 1px solid #f1f5f9;
+.card-body p {
+  margin: 0.25rem 0;
+  font-size: 0.9rem;
   color: #334155;
-  font-size: 0.95rem;
 }
 
-.remove-btn {
-  background-color: #ef4444;
-  color: white;
+.view-details-btn {
+  background: #f1f5f9;
   border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-weight: 600;
+  color: #0f172a;
   cursor: pointer;
-  font-size: 0.85rem;
+  margin-top: auto;
+}
+
+.view-details-btn:hover {
+  background: #e2e8f0;
+}
+
+/* MODAL STYLES */
+.modal-content-admin {
+  background: white;
+  width: 100%;
+  max-width: 600px;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.modal-header {
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-body {
+  padding: 2rem;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.detail-section {
+  margin-bottom: 2rem;
+}
+
+.detail-section h4 {
+  color: #0ea5e9;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.reports-list-admin {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.report-item-admin {
+  display: block;
+  padding: 1rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  text-decoration: none;
+  color: #334155;
   font-weight: 500;
-  transition: background 0.2s;
 }
 
-.remove-btn:hover {
-  background-color: #dc2626;
-}
-
-.no-patients {
-  text-align: center;
-  color: #94a3b8;
-  font-style: italic;
+.degree-preview-admin {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
 }

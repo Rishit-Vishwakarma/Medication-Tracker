@@ -3,108 +3,145 @@ import api from "../../api";
 import "./AssignDoctor.css";
 
 export default function AssignDoctor() {
-  const [assignData, setAssignData] = useState({ userId: "", doctorId: "" });
-  const [message, setMessage] = useState("");
-  const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState([]);
   const [doctors, setDoctors] = useState([]);
+  const [selectedUser, setSelectedUser] = useState("");
+  const [selectedDoctor, setSelectedDoctor] = useState("");
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
-    fetchLists();
+    fetchData();
   }, []);
 
-  const fetchLists = async () => {
+  const fetchData = async () => {
     try {
-      const [usersRes, doctorsRes] = await Promise.all([
-        api.get("/admin/all-users"),
-        api.get("/admin/all-doctors")
+      const [userRes, docRes] = await Promise.all([
+        api.get("/admin/users"),
+        api.get("/admin/doctors")
       ]);
-      setUsers(usersRes.data);
-      setDoctors(doctorsRes.data);
+      setUsers(userRes.data);
+      setDoctors(docRes.data);
     } catch (err) {
-      console.error("Failed to fetch lists", err);
+      console.error("Failed to fetch data");
     }
   };
 
   const handleAssign = async (e) => {
     e.preventDefault();
     setMessage("");
-    setLoading(true);
     try {
-      // Send JSON payload
-      const payload = {
-        userId: Number(assignData.userId),
-        doctorId: Number(assignData.doctorId)
-      };
-
-      const response = await api.post("/admin/assignDoctorToUser", payload);
-      setMessage("✅ Success: " + (response.data || "Doctor Assigned Successfully!"));
-      setAssignData({ userId: "", doctorId: "" });
-      fetchLists();
+      await api.post(`/admin/assign-doctor?userId=${selectedUser}&doctorId=${selectedDoctor}`);
+      setMessage("✅ Doctor assigned successfully!");
+      fetchData();
+      setSelectedUser("");
+      setSelectedDoctor("");
     } catch (err) {
-      setMessage("❌ Error: " + (err.response?.data?.message || "Failed to Assign Doctor"));
-    } finally {
-      setLoading(false);
+      setMessage("❌ " + (err.response?.data?.message || "Assignment failed"));
     }
   };
 
+  const currentUser = users.find(u => u.id === parseInt(selectedUser));
+  const currentDoctor = doctors.find(d => d.doctorId === parseInt(selectedDoctor));
+
   return (
     <div className="assign-container">
-      <div className="assign-card">
-        <div className="card-header">
-          <h2>Assign Doctor</h2>
-          <p>Link a patient to their primary healthcare provider</p>
-        </div>
-        
-        <form onSubmit={handleAssign} className="assign-form">
-          <div className="form-group">
-            <label>Select Patient</label>
-            <div className="select-wrapper">
-              <select 
-                value={assignData.userId} 
-                onChange={(e) => setAssignData({...assignData, userId: e.target.value})} 
-                required
-              >
+      <div className="page-header">
+        <h2>Smart Doctor Assignment</h2>
+        <p>Match patients with the right specialists based on symptoms.</p>
+      </div>
+
+      {message && <div className={`status-banner ${message.includes('✅') ? 'success' : 'error'}`}>{message}</div>}
+
+      <div className="assign-grid">
+        <div className="assign-card">
+          <form onSubmit={handleAssign}>
+            <div className="input-group">
+              <label>Select Patient</label>
+              <select value={selectedUser} onChange={(e) => setSelectedUser(e.target.value)} required>
                 <option value="">-- Choose Patient --</option>
+                {/* SHOW ALL USERS - REMOVED FILTER */}
                 {users.map(u => (
                   <option key={u.id} value={u.id}>
-                    {u.username} ({u.email}) {u.doctorName ? `✓ Assigned` : ""}
+                    {u.username} {u.assignedDoctor ? `(Current: Dr. ${u.assignedDoctor})` : ""}
                   </option>
                 ))}
               </select>
-              <span className="select-arrow">▼</span>
             </div>
-          </div>
 
-          <div className="form-group">
-            <label>Select Doctor</label>
-            <div className="select-wrapper">
-              <select 
-                value={assignData.doctorId} 
-                onChange={(e) => setAssignData({...assignData, doctorId: e.target.value})} 
-                required
-              >
+            <div className="input-group">
+              <label>Select Doctor</label>
+              <select value={selectedDoctor} onChange={(e) => setSelectedDoctor(e.target.value)} required>
                 <option value="">-- Choose Doctor --</option>
                 {doctors.map(d => (
-                  <option key={d.doctorId} value={d.doctorId}>
-                    Dr. {d.userName} ({d.email})
-                  </option>
+                  <option key={d.doctorId} value={d.doctorId}>{d.userName} - {d.specialization}</option>
                 ))}
               </select>
-              <span className="select-arrow">▼</span>
             </div>
-          </div>
 
-          <button type="submit" className="assign-btn" disabled={loading}>
-            {loading ? "Processing..." : "Confirm Assignment"}
-          </button>
-        </form>
-        
-        {message && (
-          <div className={`status-message ${message.includes('✅') ? 'success' : 'error'}`}>
-            {message}
-          </div>
-        )}
+            <button type="submit" className="primary-btn" disabled={!selectedUser || !selectedDoctor}>
+              {currentUser?.assignedDoctor ? "Re-assign Doctor" : "Assign Specialist"}
+            </button>
+          </form>
+        </div>
+
+        <div className="matching-preview">
+            <div className="preview-box">
+                <h3>Patient Context</h3>
+                {currentUser ? (
+                    <div className="context-details">
+                        <p><strong>Symptoms:</strong> <span className="highlight-text">{currentUser.symptoms}</span></p>
+                        <p><strong>Known Diseases:</strong> {currentUser.knownDisease}</p>
+                    </div>
+                ) : <p className="placeholder-text">Select a patient to see symptoms</p>}
+            </div>
+
+            <div className="preview-box">
+                <h3>Doctor Expertise</h3>
+                {currentDoctor ? (
+                    <div className="context-details">
+                        <p><strong>Specialization:</strong> <span className="highlight-text">{currentDoctor.specialization}</span></p>
+                        <p><strong>Degree:</strong> {currentDoctor.degreeName}</p>
+                    </div>
+                ) : <p className="placeholder-text">Select a doctor to see qualification</p>}
+            </div>
+
+            {currentUser && currentDoctor && (
+                <div className="match-indicator">
+                    <p>Matching <strong>{currentUser.username}</strong> with <strong>Dr. {currentDoctor.userName}</strong></p>
+                </div>
+            )}
+        </div>
+      </div>
+
+      <div className="assignments-table-section">
+        <h3>Current Assignments</h3>
+        <div className="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Patient</th>
+                        <th>Symptoms</th>
+                        <th>Assigned Doctor</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {users.filter(u => u.assignedDoctor).map(u => (
+                        <tr key={u.id}>
+                            <td><strong>{u.username}</strong></td>
+                            <td><span className="symptom-tag">{u.symptoms}</span></td>
+                            <td>Dr. {u.assignedDoctor}</td>
+                            <td>
+                                <button className="remove-btn" onClick={async () => {
+                                    await api.post(`/admin/remove-doctor?userId=${u.id}`);
+                                    fetchData();
+                                }}>Unassign</button>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
       </div>
     </div>
   );

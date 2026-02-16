@@ -1,0 +1,103 @@
+.tabs-container {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 1rem;
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.tab-btn:hover {
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+
+.tab-btn.active {
+  background-color: #e0f2fe;
+  color: #0284c7;
+}
+
+/* CENTER THE BOOK CARD */
+.tab-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centers children horizontally */
+  width: 100%;
+}
+
+.book-card {
+  background: white;
+  padding: 2.5rem;
+  border-radius: 20px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  max-width: 550px; /* Slightly wider for better look */
+}
+
+.book-card h3 {
+  margin-top: 0;
+  color: #0f172a;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+/* History List */
+.history-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 1.5rem;
+  width: 100%; /* Ensure it takes full width */
+}
+
+.appt-card {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+}
+
+.appt-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px dashed #e2e8f0;
+}
+
+.appt-date {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.appt-status {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  text-transform: uppercase;
+}
+
+.appt-status.pending { background: #fef3c7; color: #92400e; }
+.appt-status.confirmed { background: #dcfce7; color: #166534; }
+.appt-status.cancelled { background: #fee2e2; color: #991b1b; }
+.appt-status.completed { background: #e0f2fe; color: #0369a1; }
+
+.appt-body p {
+  margin: 0.5rem 0;
+  color: #334155;
+  font-size: 0.95rem;
+}

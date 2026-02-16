@@ -1,0 +1,54 @@
+==========================================================
+PROJECT ARCHITECTURE: MediCose - Smart Medication Tracker
+==========================================================
+
+1. HIGH-LEVEL OVERVIEW
+----------------------
+The system follows a modern Client-Server Architecture (Decoupled) consisting of a React.js Frontend, a Spring Boot Backend, and a MySQL Database.
+
+2. TECHNOLOGY STACK
+-------------------
+- Frontend: React.js (Vite), CSS3 (Scoped), Context API.
+- Backend: Java 21, Spring Boot 3.4, Spring Security (JWT).
+- Database: MySQL (Relational Data Storage).
+- AI Engine: Groq API (Llama 3.3 Model) for Context-Aware Chat.
+- Communication: RESTful APIs (JSON).
+
+3. ARCHITECTURAL LAYERS
+-----------------------
+
+A. PRESENTATION LAYER (Frontend - React)
+   - Dashboards: Patient, Doctor, and Admin Panels.
+   - Components: Notification Bell, AI Chatbot UI, Lab Report Manager.
+   - Security: JWT stored in SessionStorage for stateless authentication.
+
+B. SECURITY LAYER (Spring Security + JWT)
+   - JwtAuthFilter: Intercepts every request to validate the token.
+   - RBAC (Role-Based Access Control): Restricts endpoints based on roles (USER, DOCTOR, ADMIN).
+
+C. APPLICATION LAYER (Backend - Spring Boot)
+   - Controllers: Handle REST endpoints (e.g., /api/ai/chat, /reports/upload).
+   - Services: Business logic (e.g., Smart Doctor Assignment, Notification logic).
+   - DTOs (Data Transfer Objects): Clean data exchange between layers.
+
+D. DATA PERSISTENCE LAYER (Spring Data JPA)
+   - Repositories: Interface for MySQL operations.
+   - Entities: User, UserProfile, Doctor, DoctorProfile, Prescription, Appointment, LabReport, Notification, PharmacyOrder.
+
+E. EXTERNAL INTEGRATION LAYER
+   - Groq AI: Processes patient context (Prescriptions + History) to provide medical advice.
+   - SMTP Server: Handles OTP generation for Password Reset.
+   - File System: Stores uploaded Lab Reports and Profile Pictures.
+
+4. DATA FLOW (Example: AI Chat)
+-------------------------------
+1. Patient sends a message via Chatbot UI.
+2. Backend fetches Patient's Profile, Prescriptions, and Appointments from MySQL.
+3. Backend constructs a "System Prompt" containing this medical context.
+4. Backend sends the Context + User Message to Groq AI API.
+5. Groq AI returns a personalized response.
+6. Backend sends JSON response back to React UI.
+
+5. DIAGRAM DESCRIPTION (For AI Image Generation)
+------------------------------------------------
+"A professional software architecture diagram showing a React Frontend box connecting to a Spring Boot Backend box via REST API. The Backend box contains sub-layers: Security (JWT), Service Logic, and JPA. The Backend connects to a MySQL Database icon, a Groq AI cloud icon, and a File Storage icon. Arrows show bidirectional data flow. Modern, clean, tech-style visualization."

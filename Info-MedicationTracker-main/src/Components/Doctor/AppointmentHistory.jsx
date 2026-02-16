@@ -2,9 +2,14 @@ import { useEffect, useState } from "react";
 import api from "../../api";
 import "./AppointmentHistory.css";
 
-export default function AppointmentHistory() {
+export default function AppointmentHistory({ initialFilter = "ALL" }) {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState(initialFilter);
+
+  useEffect(() => {
+    setFilter(initialFilter);
+  }, [initialFilter]);
 
   useEffect(() => {
     fetchAppointments();
@@ -28,7 +33,6 @@ export default function AppointmentHistory() {
 
   const updateStatus = async (id, newStatus) => {
     try {
-      // Send JSON payload
       await api.put(`/appointments/${id}/status`, { status: newStatus });
       fetchAppointments();
     } catch (err) {
@@ -36,11 +40,26 @@ export default function AppointmentHistory() {
     }
   };
 
+  // FILTER LOGIC
+  const filteredAppointments = appointments.filter(a => {
+    if (filter === "ALL") return true;
+    if (filter === "PENDING") return a.status === "PENDING";
+    if (filter === "TODAY") {
+        const today = new Date().toISOString().split('T')[0];
+        return a.appointmentDate === today;
+    }
+    return true;
+  });
+
   return (
     <div className="appointment-analytics">
       <div className="page-header">
         <h2>Patient Appointments</h2>
-        <p>Manage your upcoming consultations</p>
+        <div className="filter-tabs">
+            <button className={filter === "ALL" ? "active" : ""} onClick={() => setFilter("ALL")}>All</button>
+            <button className={filter === "TODAY" ? "active" : ""} onClick={() => setFilter("TODAY")}>Today</button>
+            <button className={filter === "PENDING" ? "active" : ""} onClick={() => setFilter("PENDING")}>Pending</button>
+        </div>
       </div>
 
       <div className="table-section">
@@ -57,10 +76,10 @@ export default function AppointmentHistory() {
               </tr>
             </thead>
             <tbody>
-              {(!appointments || appointments.length === 0) ? (
-                <tr><td colSpan="6" style={{ textAlign: 'center' }}>No appointments booked yet.</td></tr>
+              {filteredAppointments.length === 0 ? (
+                <tr><td colSpan="6" style={{ textAlign: 'center' }}>No appointments found for this filter.</td></tr>
               ) : (
-                appointments.map((a) => (
+                filteredAppointments.map((a) => (
                   <tr key={a.id}>
                     <td>{a.user?.username || "Unknown Patient"}</td>
                     <td>{a.appointmentDate}</td>
@@ -73,10 +92,10 @@ export default function AppointmentHistory() {
                     </td>
                     <td>
                       {a.status === "PENDING" && (
-                        <>
-                          <button onClick={() => updateStatus(a.id, "CONFIRMED")} className="view-btn">Confirm</button>
-                          <button onClick={() => updateStatus(a.id, "CANCELLED")} className="cancel-btn">Cancel</button>
-                        </>
+                        <div className="action-buttons">
+                          <button onClick={() => updateStatus(a.id, "CONFIRMED")} className="icon-btn confirm" title="Confirm">✓</button>
+                          <button onClick={() => updateStatus(a.id, "CANCELLED")} className="icon-btn cancel" title="Cancel">✕</button>
+                        </div>
                       )}
                       {a.status === "CONFIRMED" && (
                         <button onClick={() => updateStatus(a.id, "COMPLETED")} className="view-btn">Mark Done</button>

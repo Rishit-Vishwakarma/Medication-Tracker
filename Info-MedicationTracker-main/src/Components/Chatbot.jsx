@@ -44,7 +44,7 @@ export default function Chatbot() {
             <div className="chat-window">
               <div className="chat-header">
                 <h3>MediBot AI</h3>
-                <button onClick={() => setIsOpen(false)}>✕</button>
+                {/* Removed duplicate cross button from here */}
               </div>
 
               <div className="chat-body">

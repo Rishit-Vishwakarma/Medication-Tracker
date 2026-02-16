@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import api from "../../api";
 import "./DoctorProfile.css";
 
-export default function DoctorProfile() {
+export default function DoctorProfile({ onUpdate }) {
   const [profile, setProfile] = useState({
     fullName: "",
     mobileNumber: "",
@@ -25,18 +25,7 @@ export default function DoctorProfile() {
   const fetchProfile = async () => {
     try {
       const response = await api.get("/doctor/profile");
-      // Only set the fields we care about editing
-      setProfile({
-        fullName: response.data.fullName || "",
-        mobileNumber: response.data.mobileNumber || "",
-        degreeName: response.data.degreeName || "",
-        specialization: response.data.specialization || "",
-        experienceYears: response.data.experienceYears || "",
-        clinicAddress: response.data.clinicAddress || "",
-        bio: response.data.bio || "",
-        profilePhotoUrl: response.data.profilePhotoUrl || "",
-        degreePhotoUrl: response.data.degreePhotoUrl || ""
-      });
+      setProfile(response.data);
     } catch (err) {
       console.log("Profile not found");
     } finally {
@@ -48,7 +37,7 @@ export default function DoctorProfile() {
     setProfile({ ...profile, [e.target.name]: e.target.value });
   };
 
-  const handleFileUpload = async (e, fieldName) => {
+  const handleFileUpload = async (e, field) => {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -60,7 +49,7 @@ export default function DoctorProfile() {
       const response = await api.post("/files/upload", formData, {
         headers: { "Content-Type": "multipart/form-data" }
       });
-      setProfile(prev => ({ ...prev, [fieldName]: response.data }));
+      setProfile(prev => ({ ...prev, [field]: response.data }));
     } catch (err) {
       alert("File upload failed!");
     } finally {
@@ -71,25 +60,11 @@ export default function DoctorProfile() {
   const handleSave = async (e) => {
     e.preventDefault();
     setMessage("");
-    
-    // Create a clean object to send
-    const payload = {
-        fullName: profile.fullName,
-        mobileNumber: profile.mobileNumber,
-        degreeName: profile.degreeName,
-        specialization: profile.specialization,
-        experienceYears: String(profile.experienceYears), // Ensure string
-        clinicAddress: profile.clinicAddress,
-        bio: profile.bio,
-        profilePhotoUrl: profile.profilePhotoUrl,
-        degreePhotoUrl: profile.degreePhotoUrl
-    };
-
     try {
-      await api.post("/doctor/profile", payload);
+      await api.post("/doctor/profile", profile);
       setMessage("✅ Profile updated successfully!");
+      if (onUpdate) onUpdate(); // ✅ Notify Dashboard to unlock sidebar
     } catch (err) {
-      console.error(err);
       setMessage("❌ Failed to update profile.");
     }
   };
@@ -100,7 +75,7 @@ export default function DoctorProfile() {
     <div className="doctor-profile-container">
       <div className="profile-card">
         <h2>Professional Profile</h2>
-        <p className="subtitle">Complete your profile to build trust with patients.</p>
+        <p className="subtitle">Complete your profile to build trust with your patients.</p>
 
         {message && <div className={`status-banner ${message.includes('✅') ? 'success' : 'error'}`}>{message}</div>}
 
@@ -112,7 +87,7 @@ export default function DoctorProfile() {
             </div>
             <div className="input-group">
               <label>Mobile Number</label>
-              <input type="text" name="mobileNumber" value={profile.mobileNumber} onChange={handleChange} placeholder="+91 9876543210" required />
+              <input type="text" name="mobileNumber" value={profile.mobileNumber} onChange={handleChange} placeholder="+1 234 567 890" required />
             </div>
             <div className="input-group">
               <label>Degree Name</label>
@@ -143,7 +118,7 @@ export default function DoctorProfile() {
               <div className="file-input-wrapper">
                 <input type="file" id="profilePhoto" accept="image/*" onChange={(e) => handleFileUpload(e, 'profilePhotoUrl')} hidden />
                 <label htmlFor="profilePhoto" className="file-label">
-                  {profile.profilePhotoUrl ? "✅ Photo Selected (Click to Change)" : "📂 Choose Photo"}
+                  {profile.profilePhotoUrl ? "✅ Photo Uploaded" : "📂 Choose Photo"}
                 </label>
               </div>
             </div>
@@ -152,7 +127,7 @@ export default function DoctorProfile() {
               <div className="file-input-wrapper">
                 <input type="file" id="degreePhoto" accept="image/*" onChange={(e) => handleFileUpload(e, 'degreePhotoUrl')} hidden />
                 <label htmlFor="degreePhoto" className="file-label">
-                  {profile.degreePhotoUrl ? "✅ Certificate Selected (Click to Change)" : "📂 Choose Certificate"}
+                  {profile.degreePhotoUrl ? "✅ Certificate Uploaded" : "📂 Choose Certificate"}
                 </label>
               </div>
             </div>

@@ -44,7 +44,6 @@
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-/* Avatar Wrapper for Camera Icon */
 .avatar-wrapper {
   position: relative;
   width: 80px;
@@ -75,18 +74,6 @@
   font-size: 14px;
   cursor: pointer;
   border: 2px solid #0f172a;
-  transition: transform 0.2s;
-}
-
-.camera-icon:hover {
-  transform: scale(1.1);
-}
-
-.uploading-text {
-  font-size: 0.75rem;
-  color: #0ea5e9;
-  display: block;
-  margin-top: 0.25rem;
 }
 
 .username {
@@ -141,10 +128,6 @@
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.logout:hover {
-  background-color: rgba(239, 68, 68, 0.1) !important;
-}
-
 /* Main Content */
 .main {
   flex-grow: 1;
@@ -160,7 +143,6 @@
   margin-left: 0;
 }
 
-/* Topbar */
 .topbar {
   background: white;
   padding: 1rem 2rem;
@@ -210,46 +192,139 @@
   object-fit: cover;
 }
 
-/* Page Content */
 .page-content {
   padding: 2rem;
   overflow-y: auto;
   flex-grow: 1;
 }
 
-/* Dashboard Grid */
-.dashboard-grid {
+/* Profile Alert Banner */
+.profile-alert {
+  background-color: #fef2f2;
+  color: #ef4444;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  border: 1px solid #fee2e2;
+  margin-bottom: 2rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Dashboard Summary Widgets */
+.dashboard-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.welcome-banner h2 {
+  font-size: 1.75rem;
+  color: #0f172a;
+  margin-bottom: 0.5rem;
+}
+
+.welcome-banner p {
+  color: #64748b;
+}
+
+.summary-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1.5rem;
 }
 
-.card {
+.summary-card {
   background: white;
-  padding: 2rem;
-  border-radius: 16px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-  text-align: center;
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+  padding: 1.5rem;
+  border-radius: 20px;
   border: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
 }
 
-.card:hover {
+.summary-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
   border-color: #0ea5e9;
 }
 
-.card .icon {
-  font-size: 2.5rem;
+.summary-card.highlight {
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+  border: none;
+}
+
+.summary-card.highlight label,
+.summary-card.highlight p,
+.summary-card.highlight strong {
+  color: white !important;
+}
+
+.card-icon {
+  font-size: 2rem;
+  background: #f1f5f9;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+}
+
+.summary-card.highlight .card-icon {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.card-info label {
   display: block;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: #94a3b8;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.25rem;
+}
+
+.card-info p {
+  margin: 0;
+  font-size: 1rem;
+  color: #1e293b;
+}
+
+.card-info h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #0f172a;
+}
+
+.quick-actions h3 {
+  font-size: 1.1rem;
+  color: #0f172a;
   margin-bottom: 1rem;
 }
 
-.card p {
+.action-btns {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.action-btns button {
+  background: white;
+  border: 1px solid #e2e8f0;
+  padding: 0.75rem 1.5rem;
+  border-radius: 10px;
   font-weight: 600;
-  color: #0f172a;
-  font-size: 1.1rem;
-  margin: 0;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.action-btns button:hover {
+  background: #f8fafc;
+  border-color: #0ea5e9;
+  color: #0284c7;
 }

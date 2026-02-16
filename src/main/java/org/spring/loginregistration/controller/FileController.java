@@ -26,7 +26,7 @@ public class FileController {
         try {
             Files.createDirectories(this.fileStorageLocation);
         } catch (Exception ex) {
-            throw new RuntimeException("Could not create the directory where the uploaded files will be stored.", ex);
+            throw new RuntimeException("Could not create the directory.", ex);
         }
     }
 
@@ -36,17 +36,23 @@ public class FileController {
             String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
             Path targetLocation = this.fileStorageLocation.resolve(fileName);
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-            
-            // Return the URL to access this file
-            String fileUrl = "http://localhost:8080/files/view/" + fileName;
-            return ResponseEntity.ok(fileUrl);
+            return ResponseEntity.ok("http://localhost:8080/files/view/" + fileName);
         } catch (IOException ex) {
-            throw new RuntimeException("Could not store file. Please try again!", ex);
+            throw new RuntimeException("Could not store file.", ex);
         }
     }
 
     @GetMapping("/view/{fileName:.+}")
     public ResponseEntity<Resource> downloadFile(@PathVariable String fileName) {
+        return serveFile(fileName);
+    }
+
+    @GetMapping("/view/reports/{fileName:.+}")
+    public ResponseEntity<Resource> downloadReport(@PathVariable String fileName) {
+        return serveFile("reports/" + fileName);
+    }
+
+    private ResponseEntity<Resource> serveFile(String fileName) {
         try {
             Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
             Resource resource = new UrlResource(filePath.toUri());

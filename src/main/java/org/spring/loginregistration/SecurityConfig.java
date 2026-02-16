@@ -40,8 +40,8 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/register", "/login", "/error", "/h2-console/**", "/doctor/register", "/doctor/login", "/admin/register", "/admin/login", "/files/**", "/api/ai/**").permitAll()
-                        .requestMatchers("/admin/**", "/user/**", "/doctor/**", "/dashboard/**", "/doctorDashboard/**", "/prescription/**", "/appointments/**", "/medication/**", "/pharmacy/**").authenticated()
+                        .requestMatchers("/register", "/login", "/error", "/h2-console/**", "/doctor/register", "/doctor/login", "/admin/register", "/admin/login", "/files/**", "/api/ai/**", "/password-reset/**").permitAll()
+                        .requestMatchers("/admin/**", "/user/**", "/doctor/**", "/dashboard/**", "/doctorDashboard/**", "/prescription/**", "/appointments/**", "/medication/**", "/pharmacy/**", "/reports/**", "/notifications/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

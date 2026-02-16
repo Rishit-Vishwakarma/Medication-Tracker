@@ -18,7 +18,8 @@ public class UserProfile {
     String knownDisease;
     String symptoms;
     String allergies;
-    String note; // Added note field
+    String note;
+    String profilePhotoUrl; // Added photo field
 
     @OneToOne
     @JoinColumn(name = "user_id", unique = true)

@@ -14,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,7 +38,12 @@ public class LabReportController {
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<LabReport> uploadReport(Authentication authentication, @RequestParam("file") MultipartFile file) {
+    public ResponseEntity<LabReport> uploadReport(
+            Authentication authentication, 
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("reportName") String reportName,
+            @RequestParam("reportDate") String reportDate
+    ) {
         Long userId = (Long) authentication.getPrincipal();
         User user = userRepository.findById(userId).orElseThrow();
 
@@ -50,6 +56,8 @@ public class LabReportController {
 
             LabReport report = new LabReport();
             report.setFileName(file.getOriginalFilename());
+            report.setReportName(reportName);
+            report.setReportDate(LocalDate.parse(reportDate));
             report.setFileUrl(fileUrl);
             report.setUser(user);
             

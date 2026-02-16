@@ -11,13 +11,13 @@ import org.spring.loginregistration.security.JwtService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class DoctorService {
+
     private final DoctorRepository doctorRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
@@ -33,63 +33,54 @@ public class DoctorService {
     }
 
     public String doctorRegistration(String userName, String email, String password){
-        if(doctorRepository.findDoctorByEmail(email).isPresent()){
+        if (doctorRepository.findByEmail(email).isPresent()){
             throw new RuntimeException("Email already exists.");
         }
-        String encodePassword = passwordEncoder.encode(password);
         Doctor doctor = new Doctor();
         doctor.setUserName(userName);
         doctor.setEmail(email);
-        doctor.setPassword(encodePassword);
+        doctor.setPassword(passwordEncoder.encode(password));
         doctorRepository.save(doctor);
         return "Doctor registered successfully.";
     }
 
     public String doctorLogin(String email, String password){
-        Doctor doctor = doctorRepository.findDoctorByEmail(email).orElse(null);
-        if(doctor == null){
-            throw new RuntimeException("No email found.");
-        }
-        if (!passwordEncoder.matches(password, doctor.getPassword())){
-            throw new RuntimeException("Password Incorrect.");
+        Doctor doctor = doctorRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found."));
+        if(!passwordEncoder.matches(password, doctor.getPassword())){
+            throw new RuntimeException("Wrong password.");
         }
         return jwtService.generateToken(doctor.getDoctorId(), "DOCTOR");
     }
 
     public List<DoctorPatientData> getMyUsers(Long doctorId){
-        Doctor doctor = doctorRepository.findById(doctorId)
-                .orElseThrow(() -> new RuntimeException("No doctor found"));
-        
-        List<User> users = userRepository.findByDoctorOrderByIdDesc(doctor);
+        Doctor doctor = doctorRepository.findById(doctorId).orElseThrow(() -> new RuntimeException("Doctor not found"));
+        List<User> users = userRepository.findByDoctor(doctor);
 
-        if(users.isEmpty()){
-            return Collections.emptyList();
-        }
-
-        List<DoctorPatientData> patientDataList = new ArrayList<>();
-
-        for(User user : users){
-            DoctorPatientData doctorPatientData = new DoctorPatientData();
-            doctorPatientData.setId(user.getId());
-            doctorPatientData.setUserName(user.getUsername());
-            doctorPatientData.setEmail(user.getEmail());
-
-            Optional<UserProfile> userProfileOpt = userProfileRepository.findByUser(user);
-            if(userProfileOpt.isPresent()){
-                UserProfile profile = userProfileOpt.get();
-                doctorPatientData.setGender(profile.getGender());
-                doctorPatientData.setSymptoms(profile.getSymptoms());
-                doctorPatientData.setAge(profile.getAge());
-                doctorPatientData.setAllergies(profile.getAllergies());
-                doctorPatientData.setNote(profile.getNote());
+        return users.stream().map(user -> {
+            Optional<UserProfile> profileOpt = userProfileRepository.findByUser(user);
+            if(profileOpt.isPresent()){
+                UserProfile p = profileOpt.get();
+                return new DoctorPatientData(
+                        user.getId(),
+                        user.getUsername(),
+                        user.getEmail(),
+                        p.getAge(),
+                        p.getGender(),
+                        p.getBloodGroup(),
+                        p.getKnownDisease(),
+                        p.getSymptoms(),
+                        p.getAllergies(),
+                        p.getNote(),
+                        p.getProfilePhotoUrl() // Map photo URL
+                );
             } else {
-                doctorPatientData.setSymptoms("Profile not set");
-                doctorPatientData.setAllergies("None");
-                doctorPatientData.setNote("No notes");
+                return new DoctorPatientData(
+                        user.getId(),
+                        user.getUsername(),
+                        user.getEmail(),
+                        0, null, null, null, null, null, null, null
+                );
             }
-
-            patientDataList.add(doctorPatientData);
-        }
-        return patientDataList;
+        }).collect(Collectors.toList());
     }
 }

@@ -1,21 +1,22 @@
 package org.spring.loginregistration.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class DoctorPatientData {
     private Long id;
     private String userName;
     private String email;
-    private String gender;
     private int age;
+    private String gender;
+    private String bloodGroup;
+    private String knownDisease;
     private String symptoms;
-    private String allergies; // Added
-    private String note;      // Added
-    private String diagnoses;
-    private LocalDate appointmentDate;
+    private String allergies;
+    private String note;
+    private String profilePhotoUrl; // Added field
 }

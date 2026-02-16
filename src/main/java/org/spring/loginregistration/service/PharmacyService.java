@@ -19,21 +19,19 @@ public class PharmacyService {
     private final MedicineRepository medicineRepository;
     private final PharmacyOrderRepository orderRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService; // Added
 
-    public PharmacyService(MedicineRepository medicineRepository, PharmacyOrderRepository orderRepository, UserRepository userRepository) {
+    public PharmacyService(MedicineRepository medicineRepository, PharmacyOrderRepository orderRepository, 
+                           UserRepository userRepository, NotificationService notificationService) {
         this.medicineRepository = medicineRepository;
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
+        this.notificationService = notificationService;
     }
 
     public Map<String, Double> getPrices(List<String> medicineNames) {
         return medicineNames.stream()
-                .collect(Collectors.toMap(
-                        name -> name,
-                        name -> medicineRepository.findByName(name)
-                                .map(Medicine::getPrice)
-                                .orElse(150.0) // Default price in Rupees
-                ));
+                .collect(Collectors.toMap(name -> name, name -> medicineRepository.findByName(name).map(Medicine::getPrice).orElse(150.0)));
     }
 
     public PharmacyOrder placeOrder(Long userId, List<String> medicines, String address, double total) {
@@ -49,21 +47,25 @@ public class PharmacyService {
         int hours = new Random().nextInt(3) + 2;
         order.setEstimatedTime(hours + "-" + (hours + 1) + " Hours");
         
-        return orderRepository.save(order);
+        PharmacyOrder saved = orderRepository.save(order);
+        notificationService.createNotification(user, "Order #" + saved.getId() + " placed successfully! Estimated delivery: " + saved.getEstimatedTime());
+        return saved;
     }
 
     public List<PharmacyOrder> getMyOrders(Long userId) {
         User user = userRepository.findById(userId).orElseThrow();
-        return orderRepository.findByUserOrderByIdDesc(user); // Latest first
+        return orderRepository.findByUserOrderByIdDesc(user);
     }
 
     public List<PharmacyOrder> getAllOrders() {
-        return orderRepository.findAllByOrderByIdDesc(); // Latest first
+        return orderRepository.findAllByOrderByIdDesc();
     }
 
     public PharmacyOrder updateOrderStatus(Long orderId, String status) {
         PharmacyOrder order = orderRepository.findById(orderId).orElseThrow();
         order.setStatus(status);
+        
+        notificationService.createNotification(order.getUser(), "Your medicine order #" + order.getId() + " is now " + status);
         return orderRepository.save(order);
     }
 }

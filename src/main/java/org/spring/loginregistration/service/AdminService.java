@@ -13,6 +13,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,10 +26,15 @@ public class AdminService {
     private final DoctorRepository doctorRepository;
     private final AppointmentRepository appointmentRepository;
     private final PharmacyOrderRepository orderRepository;
+    private final NotificationService notificationService;
+    private final UserProfileRepository userProfileRepository;
+    private final DoctorProfileRepository doctorProfileRepository;
 
     public AdminService(AdminRepository adminRepository, JwtService jwtService, PasswordEncoder passwordEncoder, 
                         UserRepository userRepository, DoctorRepository doctorRepository, 
-                        AppointmentRepository appointmentRepository, PharmacyOrderRepository orderRepository){
+                        AppointmentRepository appointmentRepository, PharmacyOrderRepository orderRepository,
+                        NotificationService notificationService, UserProfileRepository userProfileRepository,
+                        DoctorProfileRepository doctorProfileRepository){
         this.adminRepository = adminRepository;
         this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
@@ -36,6 +42,9 @@ public class AdminService {
         this.doctorRepository = doctorRepository;
         this.appointmentRepository = appointmentRepository;
         this.orderRepository = orderRepository;
+        this.notificationService = notificationService;
+        this.userProfileRepository = userProfileRepository;
+        this.doctorProfileRepository = doctorProfileRepository;
     }
 
     public void register(String userName, String email, String password){
@@ -68,23 +77,52 @@ public class AdminService {
 
         user.setDoctor(doctor);
         userRepository.save(user);
+        
+        notificationService.createNotification(user, "Dr. " + doctor.getUserName() + " has been assigned as your primary doctor.");
+        notificationService.createDoctorNotification(doctor, "New patient assigned: " + user.getUsername());
     }
 
     public List<UserDTO> getAllUsers() {
-        return userRepository.findAll().stream()
-                .map(u -> new UserDTO(
-                        u.getId(), 
-                        u.getUsername(), 
-                        u.getEmail(),
-                        u.getDoctor() != null ? u.getDoctor().getUserName() : null
-                ))
-                .collect(Collectors.toList());
+        try {
+            return userRepository.findAll().stream()
+                    .map(u -> {
+                        Optional<UserProfile> profile = userProfileRepository.findByUser(u);
+                        return new UserDTO(
+                            u.getId(), 
+                            u.getUsername(), 
+                            u.getEmail(),
+                            u.getDoctor() != null ? u.getDoctor().getUserName() : null,
+                            profile.isPresent() ? profile.get().getSymptoms() : "Not set",
+                            profile.isPresent() ? profile.get().getKnownDisease() : "None"
+                        );
+                    })
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            System.err.println("❌ Error in getAllUsers: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     public List<DoctorDTO> getAllDoctors() {
-        return doctorRepository.findAll().stream()
-                .map(d -> new DoctorDTO(d.getDoctorId(), d.getUserName(), d.getEmail()))
-                .collect(Collectors.toList());
+        try {
+            return doctorRepository.findAll().stream()
+                    .map(d -> {
+                        Optional<DoctorProfile> profile = doctorProfileRepository.findById(d.getDoctorId());
+                        return new DoctorDTO(
+                            d.getDoctorId(), 
+                            d.getUserName(), 
+                            d.getEmail(),
+                            profile.isPresent() ? profile.get().getSpecialization() : "General Physician",
+                            profile.isPresent() ? profile.get().getDegreeName() : "MBBS"
+                        );
+                    })
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            System.err.println("❌ Error in getAllDoctors: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
     }
     
     public void removeDoctorFromUser(Long userId) {

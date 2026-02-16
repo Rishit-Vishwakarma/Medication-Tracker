@@ -34,6 +34,11 @@ public class UserProfileService {
         existingProfile.setSymptoms(newProfile.getSymptoms());
         existingProfile.setAllergies(newProfile.getAllergies());
         existingProfile.setNote(newProfile.getNote());
+        
+        // Added profile photo update
+        if (newProfile.getProfilePhotoUrl() != null) {
+            existingProfile.setProfilePhotoUrl(newProfile.getProfilePhotoUrl());
+        }
 
         return userProfileRepository.save(existingProfile);
     }

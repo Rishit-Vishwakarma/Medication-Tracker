@@ -14,9 +14,11 @@ public class LabReport {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String fileName;
+    private String fileName; // Original filename
+    private String reportName; // User provided name
     private String fileUrl;
-    private LocalDate uploadDate;
+    private LocalDate reportDate; // Date of the report
+    private LocalDate uploadDate; // Date of upload
 
     @ManyToOne
     @JoinColumn(name = "user_id")

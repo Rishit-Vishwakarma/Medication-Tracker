@@ -1,54 +1,44 @@
 ==========================================================
-PROJECT ARCHITECTURE: MediCose - Smart Medication Tracker
+FULL SYSTEM ARCHITECTURE: MediCose (Smart Medication Tracker)
 ==========================================================
 
-1. HIGH-LEVEL OVERVIEW
-----------------------
-The system follows a modern Client-Server Architecture (Decoupled) consisting of a React.js Frontend, a Spring Boot Backend, and a MySQL Database.
+1. USER WORKFLOWS (Functional Layer)
+------------------------------------
+PATIENT: Login -> Profile -> Appointments -> AI Chat (Context-Aware) -> Pharmacy -> Order Tracking.
+DOCTOR:  Login -> Professional Profile -> Patient Management -> Lab Report Review -> Digital Prescription.
+ADMIN:   Login -> Analytics -> Smart Doctor-Patient Matching -> Pharmacy Order Management.
 
-2. TECHNOLOGY STACK
--------------------
-- Frontend: React.js (Vite), CSS3 (Scoped), Context API.
-- Backend: Java 21, Spring Boot 3.4, Spring Security (JWT).
-- Database: MySQL (Relational Data Storage).
-- AI Engine: Groq API (Llama 3.3 Model) for Context-Aware Chat.
-- Communication: RESTful APIs (JSON).
+2. TECHNICAL STACK (Infrastructure Layer)
+-----------------------------------------
+- FRONTEND: React.js (Vite), Scoped CSS, Context API (Theme/Auth).
+- BACKEND:  Spring Boot 3.4, Spring Security, JWT (Stateless Auth).
+- AI:       Groq API (Llama 3.3 Model) with RAG (Retrieval-Augmented Generation).
+- DATABASE: MySQL (Relational Storage).
 
-3. ARCHITECTURAL LAYERS
------------------------
+3. DATABASE SCHEMA (SQL Layer)
+------------------------------
+- users: [id, username, email, password, doctor_id]
+- user_profile: [id, age, gender, blood_group, symptoms, known_disease, profile_photo_url, user_id]
+- doctors: [doctor_id, user_name, email, password]
+- doctor_profile: [id, full_name, specialization, degree_name, experience, clinic_address, degree_photo_url]
+- appointment: [id, date, time, reason, status, user_id, doctor_id]
+- prescription: [id, date, diagnoses, medicines, note, next_follow_up, user_id, doctor_id]
+- lab_report: [id, report_name, report_date, file_url, user_id]
+- pharmacy_order: [id, medicines, total_amount, status, delivery_address, estimated_time, user_id]
+- notification: [id, message, is_read, timestamp, user_id, doctor_id]
 
-A. PRESENTATION LAYER (Frontend - React)
-   - Dashboards: Patient, Doctor, and Admin Panels.
-   - Components: Notification Bell, AI Chatbot UI, Lab Report Manager.
-   - Security: JWT stored in SessionStorage for stateless authentication.
+4. MASTER PROMPT FOR AI IMAGE GENERATION (Copy & Paste this)
+------------------------------------------------------------
+"A high-end, professional 3D software architecture diagram for a medical platform named 'MediCose'.
 
-B. SECURITY LAYER (Spring Security + JWT)
-   - JwtAuthFilter: Intercepts every request to validate the token.
-   - RBAC (Role-Based Access Control): Restricts endpoints based on roles (USER, DOCTOR, ADMIN).
+The diagram should have 4 distinct horizontal layers:
+1. TOP LAYER (Users): Three 3D icons representing 'Patient', 'Doctor', and 'Admin'.
+2. SECOND LAYER (Frontend): A large glowing 'React.js' box with sub-modules for 'Dashboards', 'AI Chat UI', and 'Medical Records'.
+3. THIRD LAYER (Backend): A powerful 'Spring Boot' engine box showing 'JWT Security', 'REST Controllers', and 'Groq AI Integration'.
+4. BOTTOM LAYER (Data): A 'MySQL Database' cylinder connected to all layers.
 
-C. APPLICATION LAYER (Backend - Spring Boot)
-   - Controllers: Handle REST endpoints (e.g., /api/ai/chat, /reports/upload).
-   - Services: Business logic (e.g., Smart Doctor Assignment, Notification logic).
-   - DTOs (Data Transfer Objects): Clean data exchange between layers.
-
-D. DATA PERSISTENCE LAYER (Spring Data JPA)
-   - Repositories: Interface for MySQL operations.
-   - Entities: User, UserProfile, Doctor, DoctorProfile, Prescription, Appointment, LabReport, Notification, PharmacyOrder.
-
-E. EXTERNAL INTEGRATION LAYER
-   - Groq AI: Processes patient context (Prescriptions + History) to provide medical advice.
-   - SMTP Server: Handles OTP generation for Password Reset.
-   - File System: Stores uploaded Lab Reports and Profile Pictures.
-
-4. DATA FLOW (Example: AI Chat)
--------------------------------
-1. Patient sends a message via Chatbot UI.
-2. Backend fetches Patient's Profile, Prescriptions, and Appointments from MySQL.
-3. Backend constructs a "System Prompt" containing this medical context.
-4. Backend sends the Context + User Message to Groq AI API.
-5. Groq AI returns a personalized response.
-6. Backend sends JSON response back to React UI.
-
-5. DIAGRAM DESCRIPTION (For AI Image Generation)
-------------------------------------------------
-"A professional software architecture diagram showing a React Frontend box connecting to a Spring Boot Backend box via REST API. The Backend box contains sub-layers: Security (JWT), Service Logic, and JPA. The Backend connects to a MySQL Database icon, a Groq AI cloud icon, and a File Storage icon. Arrows show bidirectional data flow. Modern, clean, tech-style visualization."
+Visual Style:
+- Use a clean, modern 'Medical Blue' and 'Pure White' color palette.
+- Use glowing lines and arrows to show data flow.
+- Add a 'Groq AI' cloud icon on the side connecting to the Backend.
+- High resolution, isometric view, 4k, tech-startup aesthetic, minimal and elegant."

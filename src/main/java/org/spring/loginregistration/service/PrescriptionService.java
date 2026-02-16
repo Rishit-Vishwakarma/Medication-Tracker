@@ -17,11 +17,14 @@ public class PrescriptionService {
     private final PrescriptionRepository prescriptionRepository;
     private final UserRepository userRepository;
     private final DoctorRepository doctorRepository;
+    private final NotificationService notificationService; // Added
 
-    public PrescriptionService(PrescriptionRepository prescriptionRepository, UserRepository userRepository, DoctorRepository doctorRepository) {
+    public PrescriptionService(PrescriptionRepository prescriptionRepository, UserRepository userRepository, 
+                               DoctorRepository doctorRepository, NotificationService notificationService) {
         this.prescriptionRepository = prescriptionRepository;
         this.userRepository = userRepository;
         this.doctorRepository = doctorRepository;
+        this.notificationService = notificationService;
     }
 
     public Prescription savePrescription(Long doctorId, Long patientId, List<String> medicines, String diagnoses, String note, LocalDate nextDate) {
@@ -39,12 +42,17 @@ public class PrescriptionService {
         prescription.setNote(note);
         prescription.setNextAppointmentDate(nextDate);
 
-        return prescriptionRepository.save(prescription);
+        Prescription saved = prescriptionRepository.save(prescription);
+        
+        // Notify Patient
+        notificationService.createNotification(user, "Dr. " + doctor.getUserName() + " has sent you a new prescription for " + diagnoses);
+        
+        return saved;
     }
 
     public List<Prescription> getPrescriptionsForPatient(Long patientId) {
         User user = userRepository.findById(patientId)
                 .orElseThrow(() -> new RuntimeException("Patient not found"));
-        return prescriptionRepository.findByUserOrderByIdDesc(user); // Updated to latest-first
+        return prescriptionRepository.findByUserOrderByIdDesc(user);
     }
 }

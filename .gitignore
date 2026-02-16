@@ -1,8 +1,18 @@
 HELP.md
 target/
-.mvn/wrapper/maven-wrapper.jar
+!.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+
+# User-uploaded files (IMPORTANT)
+uploads/
+
+# Node dependencies
+node_modules/
+
+# Environment variables
+.env
+.env.local
 
 ### STS ###
 .apt_generated

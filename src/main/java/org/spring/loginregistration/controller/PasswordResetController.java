@@ -28,13 +28,20 @@ public class PasswordResetController {
     @PostMapping("/request-otp")
     public ResponseEntity<Map<String, String>> requestOtp(@RequestBody Map<String, String> request) {
         String email = request.get("email");
+        System.out.println("OTP Request for: " + email); // Debug Log
+
         Optional<User> user = userRepository.findByEmail(email);
 
         if (user.isPresent()) {
-            otpService.generateOtp(email);
-            return ResponseEntity.ok(Collections.singletonMap("message", "OTP sent to your email."));
+            try {
+                otpService.generateOtp(email);
+                return ResponseEntity.ok(Collections.singletonMap("message", "OTP sent to your email."));
+            } catch (Exception e) {
+                e.printStackTrace(); // Print full error (e.g. SMTP failure)
+                return ResponseEntity.internalServerError().body(Collections.singletonMap("message", "Failed to send email: " + e.getMessage()));
+            }
         } else {
-            return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Email not found."));
+            return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Email not found in our records."));
         }
     }
 

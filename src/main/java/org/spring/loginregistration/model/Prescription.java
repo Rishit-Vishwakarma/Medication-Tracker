@@ -21,6 +21,7 @@ public class Prescription {
     private String diagnoses;
     private LocalDate nextAppointmentDate;
     private String note;
+    private LocalDate date; // Added missing field
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -29,4 +30,9 @@ public class Prescription {
     @ManyToOne
     @JoinColumn(name = "doctor_id")
     private Doctor doctor;
+    
+    @PrePersist
+    protected void onCreate() {
+        date = LocalDate.now();
+    }
 }

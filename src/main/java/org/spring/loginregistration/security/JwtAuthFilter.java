@@ -15,52 +15,35 @@ import java.util.Collections;
 
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
+
     private final JwtService jwtService;
 
-    public JwtAuthFilter(JwtService jwtService){
+    public JwtAuthFilter(JwtService jwtService) {
         this.jwtService = jwtService;
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain)
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-
+        
         String authHeader = request.getHeader("Authorization");
-
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        String token = authHeader.substring(7).trim();
+        String token = authHeader.substring(7);
+        if (jwtService.isTokenValid(token)) {
+            Long userId = jwtService.extractUserId(token);
+            String role = jwtService.extractRole(token); // Extract role from JWT
 
-        try {
-            if (jwtService.isTokenValid(token)) {
-
-                Long userId = jwtService.extractUserId(token);
-                String role = jwtService.extractRole(token);
-
-                if (SecurityContextHolder.getContext().getAuthentication() == null) {
-
-                    UsernamePasswordAuthenticationToken authentication =
-                            new UsernamePasswordAuthenticationToken(
-                                    userId,
-                                    null,
-                                    Collections.singletonList(
-                                            new SimpleGrantedAuthority("ROLE" + role)
-                                    )
-                            );
-
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                }
-            }
-        } catch (Exception e) {
-            System.out.println("JWT Error: " + e.getMessage());
+            // Set the role as a GrantedAuthority
+            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                    userId, null, Collections.singletonList(new SimpleGrantedAuthority(role))
+            );
+            SecurityContextHolder.getContext().setAuthentication(authToken);
         }
 
         filterChain.doFilter(request, response);
     }
-
 }

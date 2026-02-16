@@ -23,6 +23,11 @@ public class Notification {
     @JsonIgnore
     private User user;
 
+    @ManyToOne
+    @JoinColumn(name = "doctor_id")
+    @JsonIgnore
+    private Doctor doctor; // Added missing field
+
     @PrePersist
     protected void onCreate() {
         timestamp = LocalDateTime.now();

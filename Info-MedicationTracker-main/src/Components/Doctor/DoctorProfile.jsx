@@ -63,7 +63,7 @@ export default function DoctorProfile({ onUpdate }) {
     try {
       await api.post("/doctor/profile", profile);
       setMessage("✅ Profile updated successfully!");
-      if (onUpdate) onUpdate(); // ✅ Notify Dashboard to unlock sidebar
+      if (onUpdate) onUpdate();
     } catch (err) {
       setMessage("❌ Failed to update profile.");
     }
@@ -73,10 +73,8 @@ export default function DoctorProfile({ onUpdate }) {
 
   return (
     <div className="doctor-profile-container">
+      {/* Headings Removed */}
       <div className="profile-card">
-        <h2>Professional Profile</h2>
-        <p className="subtitle">Complete your profile to build trust with your patients.</p>
-
         {message && <div className={`status-banner ${message.includes('✅') ? 'success' : 'error'}`}>{message}</div>}
 
         <form onSubmit={handleSave} className="profile-form">

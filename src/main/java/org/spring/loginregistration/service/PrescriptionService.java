@@ -17,7 +17,7 @@ public class PrescriptionService {
     private final PrescriptionRepository prescriptionRepository;
     private final UserRepository userRepository;
     private final DoctorRepository doctorRepository;
-    private final NotificationService notificationService; // Added
+    private final NotificationService notificationService;
 
     public PrescriptionService(PrescriptionRepository prescriptionRepository, UserRepository userRepository, 
                                DoctorRepository doctorRepository, NotificationService notificationService) {
@@ -44,7 +44,6 @@ public class PrescriptionService {
 
         Prescription saved = prescriptionRepository.save(prescription);
         
-        // Notify Patient
         notificationService.createNotification(user, "Dr. " + doctor.getUserName() + " has sent you a new prescription for " + diagnoses);
         
         return saved;

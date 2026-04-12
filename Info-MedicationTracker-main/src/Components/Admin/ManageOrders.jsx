@@ -23,13 +23,18 @@ export default function ManageOrders() {
     }
   };
 
+  const updateStatus = async (id, newStatus) => {
+      if (!window.confirm(`Are you sure you want to ${newStatus.toLowerCase()} this order?`)) return;
+      try {
+          await api.put(`/pharmacy/admin/order/${id}/status`, { status: newStatus });
+          fetchOrders();
+      } catch (err) {
+          alert("Failed to update status");
+      }
+  };
+
   return (
     <div className="manage-container">
-      <div className="manage-header">
-        <h2>Pharmacy Orders</h2>
-        <p>Monitor medicine orders and delivery status</p>
-      </div>
-
       <div className="table-card">
         {loading ? <p>Loading...</p> : (
           <table>
@@ -40,6 +45,7 @@ export default function ManageOrders() {
                 <th>Medicines</th>
                 <th>Total</th>
                 <th>Status</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
@@ -47,7 +53,7 @@ export default function ManageOrders() {
                 <tr key={order.id}>
                   <td>#{order.id}</td>
                   <td>
-                    <strong>{order.user?.username || "Unknown"}</strong>
+                    <strong>{order.patientName || (order.user && order.user.username) || "Patient User"}</strong>
                   </td>
                   <td>{order.medicines.join(", ")}</td>
                   <td>₹{order.totalAmount}</td>
@@ -55,6 +61,14 @@ export default function ManageOrders() {
                     <span className={`status-badge ${order.status.toLowerCase()}`}>
                       {order.status}
                     </span>
+                  </td>
+                  <td>
+                      {/* ONLY CANCEL BUTTON FOR ADMIN MODERATION */}
+                      {order.status !== 'CANCELLED' && order.status !== 'DELIVERED' ? (
+                          <button className="cancel-btn" onClick={() => updateStatus(order.id, 'CANCELLED')}>Cancel Order</button>
+                      ) : (
+                          <span className="no-action">-</span>
+                      )}
                   </td>
                 </tr>
               ))}

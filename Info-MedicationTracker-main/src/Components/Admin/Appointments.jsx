@@ -25,11 +25,7 @@ export default function Appointments() {
 
   return (
     <div className="manage-container">
-      <div className="manage-header">
-        <h2>All Appointments</h2>
-        <p>Monitor all patient-doctor consultations</p>
-      </div>
-
+      {/* Headings Removed */}
       <div className="table-card">
         {loading ? <p>Loading...</p> : (
           <table>

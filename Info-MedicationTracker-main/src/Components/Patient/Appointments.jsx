@@ -4,7 +4,7 @@ import "./Appointments.css";
 
 export default function Appointments() {
   const [activeTab, setActiveTab] = useState("book"); // 'book' or 'history'
-  
+
   // Booking State
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
@@ -71,14 +71,14 @@ export default function Appointments() {
       </div>
 
       <div className="tabs-container">
-        <button 
-          className={`tab-btn ${activeTab === "book" ? "active" : ""}`} 
+        <button
+          className={`tab-btn ${activeTab === "book" ? "active" : ""}`}
           onClick={() => setActiveTab("book")}
         >
            Book New
         </button>
-        <button 
-          className={`tab-btn ${activeTab === "history" ? "active" : ""}`} 
+        <button
+          className={`tab-btn ${activeTab === "history" ? "active" : ""}`}
           onClick={() => setActiveTab("history")}
         >
            History
@@ -100,11 +100,11 @@ export default function Appointments() {
               </div>
               <div className="input-group">
                 <label>Reason</label>
-                <textarea 
-                  value={reason} 
-                  onChange={(e) => setReason(e.target.value)} 
-                  placeholder="Describe your symptoms..." 
-                  required 
+                <textarea
+                  value={reason}
+                  onChange={(e) => setReason(e.target.value)}
+                  placeholder="Describe your symptoms..."
+                  required
                 />
               </div>
               <button type="submit" className="primary-btn" disabled={booking}>

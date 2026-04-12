@@ -7,7 +7,7 @@ export default function MyReports() {
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
-  
+
   // Upload Form State
   const [reportName, setReportName] = useState("");
   const [reportDate, setReportDate] = useState("");
@@ -105,7 +105,7 @@ export default function MyReports() {
                 <h3>Upload Lab Report</h3>
                 <button className="close-icon-btn" onClick={() => setShowUploadModal(false)}>✕</button>
             </div>
-            
+
             <form onSubmit={handleUpload}>
                 <div className="input-group">
                     <label>Report Name</label>
@@ -115,7 +115,7 @@ export default function MyReports() {
                     <label>Report Date</label>
                     <input type="date" value={reportDate} onChange={(e) => setReportDate(e.target.value)} required />
                 </div>
-                
+
                 <div className="input-group">
                     <label>File Attachment</label>
                     <label className={`file-upload-box ${selectedFile ? 'selected' : ''}`}>

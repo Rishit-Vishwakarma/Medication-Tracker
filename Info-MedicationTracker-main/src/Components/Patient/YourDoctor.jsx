@@ -13,7 +13,6 @@ export default function YourDoctor() {
 
   const fetchDoctorInfo = async () => {
     try {
-      // Corrected Endpoint: /user/profile/my-doctor
       const response = await api.get("/user/profile/my-doctor");
       setDoctor(response.data);
     } catch (err) {
@@ -27,9 +26,7 @@ export default function YourDoctor() {
 
   return (
     <div className="patient-page">
-      <h2>Your Assigned Doctor</h2>
-      <p className="subtitle">View your primary healthcare provider's details</p>
-
+      {/* Headings Removed */}
       {error ? (
         <div className="error-card">
           <p>⚠️ {error}</p>

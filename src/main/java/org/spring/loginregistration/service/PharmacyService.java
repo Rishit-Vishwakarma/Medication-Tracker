@@ -1,5 +1,6 @@
 package org.spring.loginregistration.service;
 
+import org.spring.loginregistration.dto.PharmacyOrderResponse;
 import org.spring.loginregistration.model.Medicine;
 import org.spring.loginregistration.model.PharmacyOrder;
 import org.spring.loginregistration.model.User;
@@ -19,7 +20,7 @@ public class PharmacyService {
     private final MedicineRepository medicineRepository;
     private final PharmacyOrderRepository orderRepository;
     private final UserRepository userRepository;
-    private final NotificationService notificationService; // Added
+    private final NotificationService notificationService;
 
     public PharmacyService(MedicineRepository medicineRepository, PharmacyOrderRepository orderRepository, 
                            UserRepository userRepository, NotificationService notificationService) {
@@ -52,13 +53,37 @@ public class PharmacyService {
         return saved;
     }
 
-    public List<PharmacyOrder> getMyOrders(Long userId) {
+    // UPDATED FOR PATIENT
+    public List<PharmacyOrderResponse> getMyOrders(Long userId) {
         User user = userRepository.findById(userId).orElseThrow();
-        return orderRepository.findByUserOrderByIdDesc(user);
+        return orderRepository.findByUserOrderByIdDesc(user).stream()
+                .map(order -> new PharmacyOrderResponse(
+                        order.getId(),
+                        order.getUser() != null ? order.getUser().getUsername() : "You",
+                        order.getMedicines(),
+                        order.getTotalAmount(),
+                        order.getDeliveryAddress(),
+                        order.getStatus(),
+                        order.getOrderDate(),
+                        order.getEstimatedTime()
+                ))
+                .collect(Collectors.toList());
     }
 
-    public List<PharmacyOrder> getAllOrders() {
-        return orderRepository.findAllByOrderByIdDesc();
+    // UPDATED FOR ADMIN
+    public List<PharmacyOrderResponse> getAllOrders() {
+        return orderRepository.findAllByOrderByIdDesc().stream()
+                .map(order -> new PharmacyOrderResponse(
+                        order.getId(),
+                        order.getUser() != null ? order.getUser().getUsername() : "Unknown Patient",
+                        order.getMedicines(),
+                        order.getTotalAmount(),
+                        order.getDeliveryAddress(),
+                        order.getStatus(),
+                        order.getOrderDate(),
+                        order.getEstimatedTime()
+                ))
+                .collect(Collectors.toList());
     }
 
     public PharmacyOrder updateOrderStatus(Long orderId, String status) {

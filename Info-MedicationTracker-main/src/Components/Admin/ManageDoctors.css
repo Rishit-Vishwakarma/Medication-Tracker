@@ -29,9 +29,10 @@
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
+/* FIXED 2-COLUMN GRID FOR BOTH */
 .records-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(2, 1fr); /* ✅ Strictly 2 columns */
   gap: 1.5rem;
 }
 
@@ -140,4 +141,11 @@
   width: 100%;
   border-radius: 12px;
   border: 1px solid #e2e8f0;
+}
+
+/* Responsive Fix */
+@media (max-width: 900px) {
+  .records-grid {
+    grid-template-columns: 1fr;
+  }
 }

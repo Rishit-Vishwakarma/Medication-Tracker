@@ -30,9 +30,7 @@ export default function AdminAnalytics() {
 
   return (
     <div className="analytics-container">
-      <h2>Platform Analytics</h2>
-      <p className="subtitle">Real-time overview of platform activity</p>
-
+      {/* Headings Removed */}
       <div className="stats-grid">
         <div className="stat-card">
           <span className="stat-icon">👥</span>

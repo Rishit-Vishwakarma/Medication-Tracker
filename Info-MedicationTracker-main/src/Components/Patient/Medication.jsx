@@ -24,7 +24,6 @@ export default function Medication() {
   const handleToggle = async (id) => {
     try {
       const response = await api.put(`/medication/${id}/toggle`);
-      // Update local state
       setMedications(medications.map(med => 
         med.id === id ? { ...med, taken: response.data.taken } : med
       ));
@@ -39,9 +38,7 @@ export default function Medication() {
 
   return (
     <div className="patient-page">
-      <h2>Daily Medication Tracker</h2>
-      <p className="subtitle">Track your daily dose adherence</p>
-
+      {/* Headings Removed */}
       <div className="tracker-card">
         <div className="progress-section">
           <div className="progress-text">

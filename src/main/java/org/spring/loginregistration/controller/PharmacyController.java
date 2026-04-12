@@ -1,5 +1,6 @@
 package org.spring.loginregistration.controller;
 
+import org.spring.loginregistration.dto.PharmacyOrderResponse;
 import org.spring.loginregistration.model.PharmacyOrder;
 import org.spring.loginregistration.service.PharmacyService;
 import org.springframework.http.ResponseEntity;
@@ -29,19 +30,19 @@ public class PharmacyController {
         List<String> medicines = (List<String>) request.get("medicines");
         String address = (String) request.get("address");
         double total = Double.parseDouble(request.get("total").toString());
-        
+
         return ResponseEntity.ok(pharmacyService.placeOrder(userId, medicines, address, total));
     }
 
-    @GetMapping("/my-orders")
-    public ResponseEntity<List<PharmacyOrder>> getMyOrders(Authentication authentication) {
+    @GetMapping("/my-orders") // UPDATED RETURN TYPE
+    public ResponseEntity<List<PharmacyOrderResponse>> getMyOrders(Authentication authentication) {
         Long userId = (Long) authentication.getPrincipal();
         return ResponseEntity.ok(pharmacyService.getMyOrders(userId));
     }
 
     // Admin Endpoints
     @GetMapping("/admin/all-orders")
-    public ResponseEntity<List<PharmacyOrder>> getAllOrders() {
+    public ResponseEntity<List<PharmacyOrderResponse>> getAllOrders() {
         return ResponseEntity.ok(pharmacyService.getAllOrders());
     }
 

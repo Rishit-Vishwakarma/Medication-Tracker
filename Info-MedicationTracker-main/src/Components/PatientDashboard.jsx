@@ -52,7 +52,7 @@ export default function PatientDashboard({ user, logout }) {
       }
     } catch (err) {
       setIsProfileComplete(false);
-      setActiveTab("profile");
+      setActivePage("profile");
     }
   };
 
@@ -147,6 +147,10 @@ export default function PatientDashboard({ user, logout }) {
   );
 
   const renderPage = () => {
+    if (!isProfileComplete) {
+        return <MyProfile user={user} />;
+    }
+
     switch (activePage) {
       case "profile": return <MyProfile user={user} />;
       case "doctor": return <YourDoctor />;
@@ -163,14 +167,13 @@ export default function PatientDashboard({ user, logout }) {
   return (
     <div className={`layout ${sidebarOpen ? "" : "sidebar-closed"}`}>
       <aside className={`sidebar ${sidebarOpen ? "" : "collapsed"}`}>
-        <h2 className="brand">MedicationTrack</h2>
+        <h2 className="brand">Medicose</h2>
         <div className="profile-box">
           <div className="avatar-wrapper">
             <img src={photo} alt="Profile" className="sidebar-avatar" onError={(e) => e.target.src = "https://cdn-icons-png.flaticon.com/512/847/847969.png"} />
             <label htmlFor="sidebar-photo-upload" className="camera-icon">📷</label>
             <input type="file" id="sidebar-photo-upload" accept="image/*" onChange={handlePhotoUpload} hidden />
           </div>
-          {/* Sidebar shows Username */}
           <p className="username">{user?.username || "Patient"}</p>
         </div>
         
@@ -203,7 +206,6 @@ export default function PatientDashboard({ user, logout }) {
           </div>
           <div className="account">
             {isProfileComplete && <NotificationBell />}
-            {/* Topbar shows Email */}
             <span>{user?.email}</span>
             <img src={photo} alt="Account" onError={(e) => e.target.src = "https://cdn-icons-png.flaticon.com/512/847/847969.png"} />
           </div>

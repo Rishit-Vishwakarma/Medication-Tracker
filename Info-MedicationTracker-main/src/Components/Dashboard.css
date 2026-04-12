@@ -276,7 +276,23 @@
   color: #0284c7;
 }
 
+/* Profile Alert Banner */
+.doctor-dashboard-wrapper .profile-alert-doctor {
+  background-color: #fef2f2;
+  color: #ef4444;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  border: 1px solid #fee2e2;
+  margin-bottom: 2rem;
+  font-weight: 600;
+  text-align: center;
+}
+
 /* Patient Table Card */
+.doctor-dashboard-wrapper .content-section h2 {
+  margin-bottom: 2rem; /* ✅ Added bottom space */
+}
+
 .doctor-dashboard-wrapper .patient-list-card {
   background: white;
   border-radius: 20px;

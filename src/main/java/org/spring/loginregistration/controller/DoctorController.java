@@ -1,12 +1,14 @@
 package org.spring.loginregistration.controller;
 
 import org.spring.loginregistration.dto.DoctorPatientData;
+import org.spring.loginregistration.dto.PrescriptionRequest;
 import org.spring.loginregistration.model.Appointment;
 import org.spring.loginregistration.model.Doctor;
 import org.spring.loginregistration.repository.AppointmentRepository;
 import org.spring.loginregistration.repository.DoctorRepository;
 import org.spring.loginregistration.repository.UserRepository;
 import org.spring.loginregistration.service.DoctorService;
+import org.spring.loginregistration.service.PrescriptionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -23,13 +25,16 @@ public class DoctorController {
     private final DoctorRepository doctorRepository;
     private final UserRepository userRepository;
     private final AppointmentRepository appointmentRepository;
+    private final PrescriptionService prescriptionService;
 
     public DoctorController(DoctorService doctorService, DoctorRepository doctorRepository, 
-                            UserRepository userRepository, AppointmentRepository appointmentRepository) {
+                            UserRepository userRepository, AppointmentRepository appointmentRepository,
+                            PrescriptionService prescriptionService) {
         this.doctorService = doctorService;
         this.doctorRepository = doctorRepository;
         this.userRepository = userRepository;
         this.appointmentRepository = appointmentRepository;
+        this.prescriptionService = prescriptionService;
     }
 
     @PostMapping("/doctor/register")
@@ -67,5 +72,21 @@ public class DoctorController {
         stats.put("todayAppointments", allAppts.stream().filter(a -> LocalDate.now().equals(a.getAppointmentDate())).count());
         
         return ResponseEntity.ok(stats);
+    }
+
+    @PostMapping("/doctor/prescription")
+    public String writePrescription(@RequestBody PrescriptionRequest request, Authentication authentication){
+        Long doctorId = (Long) authentication.getPrincipal();
+
+        prescriptionService.savePrescription(
+                doctorId,
+                request.getUserId(),
+                request.getMedicines(),
+                request.getDiagnosis(),
+                request.getNote(),
+                request.getNextAppointmentDate()
+        );
+
+        return "Prescription sent successfully!";
     }
 }

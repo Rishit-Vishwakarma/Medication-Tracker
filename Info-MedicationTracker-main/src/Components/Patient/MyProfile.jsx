@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import api from "../../api";
-import "../Doctor/DoctorProfile.css"; // Reuse Doctor Profile CSS
+import "../Doctor/DoctorProfile.css";
 
 export default function MyProfile({ user }) {
   const [profile, setProfile] = useState({
@@ -57,16 +57,11 @@ export default function MyProfile({ user }) {
 
   return (
     <div className="doctor-profile-container">
+      {/* Headings Removed */}
       <div className="profile-card">
-        <h2>My Medical Profile</h2>
-        <p className="subtitle">Keep your health information up to date for better diagnosis.</p>
-
         {message && <div className={`status-banner ${message.includes('✅') ? 'success' : 'error'}`}>{message}</div>}
 
         <form onSubmit={handleSave} className="profile-form">
-          
-          {/* Photo upload moved to Sidebar */}
-
           <div className="form-grid">
             <div className="input-group">
               <label>Age</label>

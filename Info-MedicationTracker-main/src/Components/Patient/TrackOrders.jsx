@@ -25,9 +25,7 @@ export default function TrackOrders() {
 
   return (
     <div className="patient-page">
-      <h2>Track Your Orders</h2>
-      <p className="subtitle">Real-time status of your medication delivery</p>
-
+      {/* Headings Removed */}
       <div className="orders-list">
         {loading ? <p>Loading...</p> : orders.length === 0 ? (
           <div className="empty-state">

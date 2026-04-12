@@ -18,7 +18,7 @@ export default function BookAppointment() {
       // Send JSON payload
       const payload = {
         date: date,
-        time: time + ":00", // Ensure HH:mm:ss format
+        time: time + ":00",
         reason: reason
       };
 

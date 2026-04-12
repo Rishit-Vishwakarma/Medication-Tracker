@@ -55,7 +55,6 @@ export default function Dashboard({ user, logout }) {
       if (res.data.specialization) setSpecialization(`${res.data.degreeName || ""} ${res.data.specialization}`);
       if (res.data.profilePhotoUrl) setPhoto(res.data.profilePhotoUrl);
 
-      // STRICT CHECK: Must have Full Name and Specialization
       if (res.data.fullName && res.data.specialization) {
           setIsProfileComplete(true);
       } else {
@@ -171,7 +170,7 @@ export default function Dashboard({ user, logout }) {
       <div className="dashboard-container">
         {sidebarOpen && (
           <aside className="sidebar">
-            <h2 className="brand">MedicationTrack</h2>
+            <h2 className="brand">Medicose</h2>
             <div className="profile-box">
               <img src={photo} alt="Profile" className="sidebar-avatar" />
               <p className="username">Dr. {doctorName}</p>
@@ -180,11 +179,12 @@ export default function Dashboard({ user, logout }) {
             <nav className="menu">
               {isProfileComplete ? (
                 <>
-                  <button className={activeTab === "dashboard" ? "active" : ""} onClick={() => setActiveTab("dashboard")}>🏠 Dashboard</button>
-                  <button className={activeTab === "patients" ? "active" : ""} onClick={() => setActiveTab("patients")}>👥 My Patients</button>
-                  <button className={activeTab === "appointments" ? "active" : ""} onClick={() => { setActiveTab("appointments"); setApptFilter("ALL"); }}>📅 Appointments</button>
-                  <button className={activeTab === "profile" ? "active" : ""} onClick={() => setActiveTab("profile")}>👤 Profile</button>
-                  <button className={activeTab === "contact" ? "active" : ""} onClick={() => setActiveTab("contact")}>🎧 Support</button>
+                  {/* ICONS REMOVED FROM SIDEBAR */}
+                  <button className={activeTab === "dashboard" ? "active" : ""} onClick={() => setActiveTab("dashboard")}>Dashboard</button>
+                  <button className={activeTab === "patients" ? "active" : ""} onClick={() => setActiveTab("patients")}>My Patients</button>
+                  <button className={activeTab === "appointments" ? "active" : ""} onClick={() => { setActiveTab("appointments"); setApptFilter("ALL"); }}>Appointments</button>
+                  <button className={activeTab === "profile" ? "active" : ""} onClick={() => setActiveTab("profile")}>Profile</button>
+                  <button className={activeTab === "contact" ? "active" : ""} onClick={() => setActiveTab("contact")}>Support</button>
                 </>
               ) : (
                 <button className="active blink-profile" onClick={() => setActiveTab("profile")}>⚠️ Complete Profile</button>
@@ -210,11 +210,11 @@ export default function Dashboard({ user, logout }) {
 
           <div className="dashboard-page-content">
               {!isProfileComplete && <div className="profile-alert-doctor">Please complete your professional profile to access patient data.</div>}
-              
+
               {activeTab === "dashboard" && isProfileComplete && renderDashboard()}
               {activeTab === "patients" && isProfileComplete && (
                 <div className="content-section">
-                  <h2>Patient Management</h2>
+                  {/* Heading Removed */}
                   <div className="patient-list-card">
                     {patients.length === 0 ? (
                       <div style={{padding: '3rem', textAlign: 'center', color: '#64748b'}}><p>No patients assigned yet.</p></div>
@@ -238,7 +238,7 @@ export default function Dashboard({ user, logout }) {
                 </div>
               )}
               {activeTab === "appointments" && isProfileComplete && <AppointmentHistory initialFilter={apptFilter} />}
-              {activeTab === "profile" && <DoctorProfile onUpdate={checkProfile} />} {/* ✅ Added callback */}
+              {activeTab === "profile" && <DoctorProfile onUpdate={checkProfile} />}
               {activeTab === "contact" && isProfileComplete && <ContactUs />}
           </div>
         </main>

@@ -21,7 +21,7 @@ public class Prescription {
     private String diagnoses;
     private LocalDate nextAppointmentDate;
     private String note;
-    private LocalDate date; // Added missing field
+    private LocalDate date;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

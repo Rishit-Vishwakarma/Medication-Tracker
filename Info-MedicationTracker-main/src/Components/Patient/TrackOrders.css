@@ -2,8 +2,9 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  margin-top: 2rem;
-  max-width: 800px;
+  margin: 2rem auto 0 auto;
+  width: 100%;
+  max-width: 700px;
 }
 
 .order-card {
@@ -39,6 +40,7 @@
 .order-status.pending { background: #fef3c7; color: #92400e; }
 .order-status.shipped { background: #e0f2fe; color: #0369a1; }
 .order-status.delivered { background: #dcfce7; color: #166534; }
+.order-status.cancelled { background: #fee2e2; color: #991b1b; } /* ✅ Added */
 
 .order-body {
   padding: 1.5rem;
@@ -89,6 +91,11 @@
   background-color: #0284c7;
   border-radius: 4px;
   transition: width 0.5s ease;
+}
+
+/* Red progress bar for cancelled orders */
+.order-card.cancelled .progress-fill {
+  background-color: #ef4444;
 }
 
 .progress-labels {

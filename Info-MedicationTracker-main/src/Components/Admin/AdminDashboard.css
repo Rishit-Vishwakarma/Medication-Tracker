@@ -1,6 +1,6 @@
 /* Professional Admin Dashboard UI */
 :root {
-  --sidebar-bg: #0f172a; /* Deep Navy - Same as Patient */
+  --sidebar-bg: #0f172a;
   --sidebar-text: #94a3b8;
   --sidebar-text-hover: #ffffff;
   --primary-accent: #0ea5e9;
@@ -8,7 +8,6 @@
   --text-main: #1e293b;
   --sidebar-width: 260px;
   --active-item-bg: rgba(255, 255, 255, 0.2);
-  --active-item-text: #ffffff;
 }
 
 * {
@@ -25,7 +24,7 @@ body {
 
 .admin-dashboard {
   display: flex;
-  min-height: 100vh;
+  height: 100vh;
 }
 
 /* Sidebar */
@@ -40,14 +39,7 @@ body {
   display: flex;
   flex-direction: column;
   padding: 2rem 1.5rem;
-  transition: transform 0.3s ease;
   z-index: 1000;
-  overflow-y: auto;
-  scrollbar-width: none;
-}
-
-.sidebar::-webkit-scrollbar {
-  display: none;
 }
 
 .brand {
@@ -56,7 +48,6 @@ body {
   text-align: center;
   margin-bottom: 2.5rem;
   color: white;
-  letter-spacing: 0.5px;
 }
 
 .profile-section {
@@ -76,14 +67,12 @@ body {
 .profile-section h3 {
   font-size: 1rem;
   font-weight: 600;
-  margin: 0;
   color: white;
 }
 
 .profile-section p {
   color: var(--sidebar-text);
   font-size: 0.8rem;
-  margin-top: 0.25rem;
 }
 
 .menu {
@@ -104,8 +93,6 @@ body {
   font-size: 0.95rem;
   font-weight: 500;
   transition: all 0.2s;
-  display: flex;
-  align-items: center;
 }
 
 .menu button:hover {
@@ -128,22 +115,71 @@ body {
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   text-align: left;
-  width: 100%;
-}
-
-.logout-btn:hover {
-  background-color: rgba(239, 68, 68, 0.1);
-  color: #f87171;
 }
 
 /* Main Content */
 .main-content {
   flex-grow: 1;
   margin-left: var(--sidebar-width);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ADMIN TOPBAR */
+.admin-topbar {
+  background: white;
+  padding: 0 2.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e2e8f0;
+  height: 70px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 900;
+}
+
+.admin-topbar h1 {
+  font-size: 1.25rem;
+  color: #0f172a;
+  margin: 0;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+}
+
+.admin-account {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.admin-account span {
+  font-weight: 600;
+  color: #334155;
+}
+
+.admin-avatar-small {
+  width: 40px;
+  height: 40px;
+  background: #f1f5f9;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  border: 2px solid #e2e8f0;
+}
+
+.admin-page-content {
   padding: 2.5rem;
   overflow-y: auto;
-  background-color: var(--bg-light);
+  flex-grow: 1;
 }

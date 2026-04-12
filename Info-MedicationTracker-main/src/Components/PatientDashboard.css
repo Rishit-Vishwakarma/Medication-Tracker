@@ -4,6 +4,7 @@
   height: 100vh;
   background-color: #f8fafc;
   font-family: 'Inter', sans-serif;
+  overflow: hidden; /* Prevent body scroll */
 }
 
 /* Sidebar */
@@ -18,6 +19,23 @@
   position: fixed;
   height: 100vh;
   z-index: 100;
+  overflow-y: auto; /* ✅ ENABLE SCROLLING */
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: #334155 #0f172a;
+}
+
+/* Custom Scrollbar for Chrome/Safari */
+.sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background-color: #334155;
+  border-radius: 10px;
 }
 
 .sidebar.collapsed {
@@ -33,6 +51,7 @@
   text-align: center;
   margin-bottom: 2rem;
   letter-spacing: 0.5px;
+  flex-shrink: 0; /* Prevent shrinking */
 }
 
 .profile-box {
@@ -42,6 +61,7 @@
   background: rgba(255, 255, 255, 0.03);
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.05);
+  flex-shrink: 0; /* Prevent shrinking */
 }
 
 .avatar-wrapper {
@@ -88,6 +108,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  flex-grow: 1; /* Push logout to bottom */
 }
 
 .menu li {
@@ -123,9 +144,11 @@
 }
 
 .logout {
-  margin-top: auto;
+  margin-top: 2rem; /* Ensure space before logout */
   color: #ef4444 !important;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 1rem;
+  flex-shrink: 0;
 }
 
 /* Main Content */
@@ -151,6 +174,7 @@
   align-items: center;
   border-bottom: 1px solid #e2e8f0;
   height: 70px;
+  flex-shrink: 0;
 }
 
 .header-left {

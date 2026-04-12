@@ -2,6 +2,7 @@ package org.spring.loginregistration.controller;
 
 import org.spring.loginregistration.model.*;
 import org.spring.loginregistration.repository.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -21,7 +22,8 @@ import java.util.Optional;
 @RequestMapping("/api/ai")
 public class AiController {
 
-    private final String API_KEY = "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"; 
+    @Value("${groq.api.key}")
+    private String API_KEY; 
     private final String API_URL = "https://api.groq.com/openai/v1/chat/completions";
 
     private final UserRepository userRepository;
@@ -44,7 +46,7 @@ public class AiController {
     public ResponseEntity<Map<String, String>> chat(Authentication authentication, @RequestBody Map<String, String> request) {
         String userMessage = request.get("message");
         
-        // 1. Fetch User Context
+
         Long userId = (Long) authentication.getPrincipal();
         User user = userRepository.findById(userId).orElseThrow();
         Optional<UserProfile> profileOpt = userProfileRepository.findByUser(user);
@@ -53,7 +55,8 @@ public class AiController {
         List<Appointment> appointments = appointmentRepository.findByUser(user);
         List<PharmacyOrder> orders = orderRepository.findByUserOrderByIdDesc(user);
 
-        // 2. Build Comprehensive Context String
+
+
         StringBuilder context = new StringBuilder();
         context.append("--- PATIENT PROFILE ---\n");
         context.append("Name: ").append(user.getUsername()).append("\n");

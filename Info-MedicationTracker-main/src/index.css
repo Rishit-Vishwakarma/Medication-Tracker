@@ -20,6 +20,11 @@ body {
   color: var(--text-dark);
 }
 
+/* HIDE ALL PAGE HEADERS GLOBALLY */
+.page-header {
+  display: none !important;
+}
+
 /* ===== Layout ===== */
 .login-container {
   min-height: 100vh;
@@ -41,7 +46,7 @@ body {
   animation: fadeIn 0.4s ease;
 }
 
-/* ===== Headings ===== */
+/* ===== Headings (Login Only) ===== */
 .login-box h2 {
   margin: 0;
   font-size: 1.9rem;

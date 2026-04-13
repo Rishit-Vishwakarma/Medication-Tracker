@@ -40,8 +40,15 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/register", "/login", "/error", "/h2-console/**", "/doctor/register", "/doctor/login", "/admin/register", "/admin/login", "/files/**", "/api/ai/**", "/password-reset/**").permitAll()
-                        .requestMatchers("/admin/**", "/user/**", "/doctor/**", "/dashboard/**", "/doctorDashboard/**", "/prescription/**", "/appointments/**", "/medication/**", "/pharmacy/**", "/reports/**", "/notifications/**").authenticated()
+                        // Permit access to registration, login, error pages, H2 console, files, AI API, password reset
+                        .requestMatchers(
+                                "/register", "/login", "/error", "/h2-console/**",
+                                "/doctor/register", "/doctor/login", "/admin/register", "/admin/login",
+                                "/files/**", "/api/ai/**", "/password-reset/**"
+                        ).permitAll()
+                        // Permit access to root path and static resources for the frontend
+                        .requestMatchers("/", "/index.html", "/favicon.ico", "/assets/**", "/*.css", "/*.js", "/*.png", "/*.jpg", "/*.jpeg", "/*.gif", "/*.svg").permitAll()
+                        // All other requests require authentication
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -53,11 +60,11 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:5174"));
+        configuration.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:5174", "https://mediicose.netlify.app"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
-        
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

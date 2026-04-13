@@ -8,6 +8,9 @@ WORKDIR /app
 COPY .mvn/ .mvn/
 COPY mvnw pom.xml ./
 
+# Grant execute permission to the Maven wrapper script
+RUN chmod +x mvnw
+
 # Copy the source code
 COPY src ./src
 
